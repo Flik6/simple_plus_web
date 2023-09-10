@@ -25,6 +25,15 @@
             class="!w-240px"
           />
         </el-form-item>
+        <el-form-item label="店铺名称" prop="shopName">
+        <el-input
+          v-model="queryParams.shopName"
+          placeholder="请输入分类名称"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
         <el-form-item>
           <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
           <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -72,6 +81,7 @@
                 />
               </template>
             </el-table-column>
+            <el-table-column label="所属门店" align="center" prop="shopName" />
             <el-table-column label="商品名称" align="center" prop="storeName" />
             <el-table-column label="商品价格" align="center" prop="price" />
             <el-table-column label="销量" align="center"  width="80" prop="sales" />
@@ -147,7 +157,8 @@ const queryParams = reactive({
   isPostage: null,
   isShow: 1,
   stock: 1,
-  cateId: 0
+  cateId: null,
+  shopName: null
 })
 const queryFormRef = ref() // 搜索的表单
 const exportLoading = ref(false) // 导出的加载中

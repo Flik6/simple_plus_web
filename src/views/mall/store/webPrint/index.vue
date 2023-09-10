@@ -8,19 +8,10 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="姓名" prop="realName">
+      <el-form-item label="打印机名称" prop="title">
         <el-input
-          v-model="queryParams.realName"
-          placeholder="请输入收货人姓名"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="电话" prop="phone">
-        <el-input
-          v-model="queryParams.phone"
-          placeholder="请输入收货人电话"
+          v-model="queryParams.title"
+          placeholder="请输入打印机名称"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
@@ -29,6 +20,23 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
+        <el-button
+          type="primary"
+          plain
+          @click="openForm('create')"
+          v-hasPermi="['store:web-print:create']"
+        >
+          <Icon icon="ep:plus" class="mr-5px" /> 新增
+        </el-button>
+        <el-button
+          type="success"
+          plain
+          @click="handleExport"
+          :loading="exportLoading"
+          v-hasPermi="['store:web-print:export']"
+        >
+          <Icon icon="ep:download" class="mr-5px" /> 导出
+        </el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -37,30 +45,22 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list">
       <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="收货人姓名" align="center" prop="realName" />
-      <el-table-column label="收货人电话" align="center" prop="phone" />
-      <el-table-column label="收货人地址" align="center" prop="address" />
-      <el-table-column label="收货人详细地址" align="center" prop="detail" />
-      <el-table-column label="是否默认" align="center" prop="isDefault">
-        <template #default="scope">
-         <span v-if="scope.row.isDefault == 1">是</span>
-         <span v-else>否</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="打印机名称" align="center" prop="title" />
+      <el-table-column label="终端号" align="center" prop="mechineCode" />
+      <el-table-column label="终端密钥" align="center" prop="msign" />
       <el-table-column
-        label="添加时间"
+        label="创建时间"
         align="center"
         prop="createTime"
         :formatter="dateFormatter"
-        width="180"
       />
-      <el-table-column label="操作" align="center" fixed="right" width="150">
+      <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
-            v-hasPermi="['member:user-address:update']"
+            v-hasPermi="['store:web-print:update']"
           >
             编辑
           </el-button>
@@ -68,7 +68,7 @@
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['member:user-address:delete']"
+            v-hasPermi="['store:web-print:delete']"
           >
             删除
           </el-button>
@@ -85,13 +85,14 @@
   </ContentWrap>
 
   <!-- 表单弹窗：添加/修改 -->
-  <UserAddressForm ref="formRef" @success="getList" />
+  <WebPrintForm ref="formRef" @success="getList" />
 </template>
 
-<script setup lang="ts" name="UserAddress">
+<script setup lang="ts" name="WebPrint">
 import { dateFormatter } from '@/utils/formatTime'
-import * as UserAddressApi from '@/api/member/userAddress'
-import UserAddressForm from './UserAddressForm.vue'
+import download from '@/utils/download'
+import * as WebPrintApi from '@/api/mall/store/webPrint'
+import WebPrintForm from './WebPrintForm.vue'
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
@@ -101,27 +102,19 @@ const list = ref([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
   pageSize: 10,
-  uid: null,
-  realName: null,
-  phone: null,
-  province: null,
-  city: null,
-  cityId: null,
-  district: null,
-  detail: null,
-  postCode: null,
-  longitude: null,
-  latitude: null,
-  isDefault: null,
+  title: null,
+  mechineCode: null,
+  msign: null,
   createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
+const exportLoading = ref(false) // 导出的加载中
 
 /** 查询列表 */
 const getList = async () => {
   loading.value = true
   try {
-    const data = await UserAddressApi.getUserAddressPage(queryParams)
+    const data = await WebPrintApi.getWebPrintPage(queryParams)
     list.value = data.list
     total.value = data.total
   } finally {
@@ -153,13 +146,27 @@ const handleDelete = async (id: number) => {
     // 删除的二次确认
     await message.delConfirm()
     // 发起删除
-    await UserAddressApi.deleteUserAddress(id)
+    await WebPrintApi.deleteWebPrint(id)
     message.success(t('common.delSuccess'))
     // 刷新列表
     await getList()
   } catch {}
 }
 
+/** 导出按钮操作 */
+const handleExport = async () => {
+  try {
+    // 导出的二次确认
+    await message.exportConfirm()
+    // 发起导出
+    exportLoading.value = true
+    const data = await WebPrintApi.exportWebPrint(queryParams)
+    download.excel(data, '易联云打印机.xls')
+  } catch {
+  } finally {
+    exportLoading.value = false
+  }
+}
 
 /** 初始化 **/
 onMounted(() => {

@@ -45,11 +45,14 @@ import VueUeditorWrap from 'vue-ueditor-wrap'
 
 import print from 'vue3-print-nb'
 
+
+
 // 创建实例
 const setupAll = async () => {
   const app = createApp(App)
   app.use(VueUeditorWrap)
   app.use(print)
+
 
   await setupI18n(app)
 

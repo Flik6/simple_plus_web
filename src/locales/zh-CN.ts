@@ -103,8 +103,8 @@ export default {
     small: '小'
   },
   login: {
-    welcome: '欢迎使用yshop-pro电商系统',
-    message: '开箱即用的商城管理后台意象商城管理系统',
+    welcome: '欢迎使用yshop订餐系统',
+    message: '开箱即用的商城管理后台意象订餐管理系统',
     tenantname: '租户名称',
     username: '用户名',
     password: '密码',
@@ -278,6 +278,7 @@ export default {
     header: '头部'
   },
   action: {
+    couponRecord: '优惠券领取记录',
     yue: '积分余额',
     userDetail: '用户详情',
     orderRecord: '订单记录',

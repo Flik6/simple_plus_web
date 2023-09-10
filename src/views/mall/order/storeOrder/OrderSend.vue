@@ -7,62 +7,27 @@
       label-width="120px"
       v-loading="formLoading"
     >
-      <el-form-item label="选择类型" prop="orderType">
-         <el-radio-group v-model="formData.orderType">
-          <el-radio label="send">发货</el-radio>
-        </el-radio-group>
+      <el-form-item label="订单号" prop="orderType">
+        <el-input v-model="formData.orderId" disabled class="input-width" />
       </el-form-item>
-      <el-form-item label="发货类型" prop="deliveryType">
-         <el-radio-group v-model="formData.deliveryType" @change="selectDelivery">
-          <el-radio label="normal">手动填写</el-radio>
-          <el-radio label="face">电子面单</el-radio>
-        </el-radio-group>
+      <el-form-item label="取餐号" prop="orderType">
+        <el-input v-model="formData.numberId" disabled class="input-width" />
       </el-form-item>
-      <el-form-item label="快递公司" prop="deliverySn" v-show="isShow">
-          <el-select v-model="formData.deliverySn" placeholder="选择快递公司" @change="selectExpress" >
-            <el-option label="选择快递公司" value="" />
-            <el-option
-              v-for="item in express"
-              :key="item.code"
-              :label="item.name"
-              :value="item.code"
-            />
-          </el-select>
+      <el-form-item label="地址" prop="orderType" v-if="formData.orderType == 'takeout'">
+        <span>{{ formData.realName }}{{ formData.userPhone }}{{ formData.userAddress }}</span>
       </el-form-item>
-      <el-form-item label="快递单号" prop="deliveryId" v-show="isShow">
-        <el-input v-model="formData.deliveryId" placeholder="请输入快递单号" class="input-width" />
-      </el-form-item>
-      <el-form-item label="电子面单模板" prop="deliverySn" v-show="!isShow">
-          <el-select v-model="electId" placeholder="选择子面单模板"  @change="selectOrder">
-            <el-option label="选择子面单模板" :value="0" />
-            <el-option
-              v-for="item in electOrder"
-              :key="item.id"
-              :label="item.title"
-              :value="item.id"
-            />
-          </el-select>
-      </el-form-item>
-
-
-      <div id="printBox">
-        <!-- {{ printHtml }} -->
-        <span v-html="printHtml"></span>
-      </div>
+  
 
       
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary"  v-show="isShow" :disabled="formLoading">确 定</el-button>
-      <el-button v-print="print" type="primary"  v-show="!isShow" :disabled="formLoading">打印电子面单</el-button>
+      <el-button @click="submitForm" type="primary"   :disabled="formLoading">确 定</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </Dialog>
 </template>
 <script setup lang="ts">
 import * as StoreOrderApi from '@/api/mall/order/storeOrder'
-import * as ExpressApi from '@/api/mall/order/express'
-import * as ElectronicsOrderApi from '@/api/mall/order/electronicsOrder'
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -75,7 +40,7 @@ const formData = ref({
     id: undefined,
     updateType: "",
     orderId: undefined,
-    orderType: 'send',
+    orderType: undefined,
     extendOrderId: undefined,
     uid: undefined,
     realName: undefined,
@@ -130,38 +95,11 @@ const formRules = reactive({
 })
 const formRef = ref() // 表单 Ref
 
-const express = ref([])
-const electOrder = ref([])
-const isShow = ref(true)
-const electId = ref(0)
-const printHtml = ref('')
+//const express = ref([])
+//const electOrder = ref([])
 
 
 
-const print = ref({
-  id: 'printBox',//这里的id就是上面我们的打印区域id，实现指哪打哪
-  popTitle: '快递电子面单打印', // 打印配置页上方的标题
-  extraHead: '', // 最上方的头部文字，附加在head标签上的额外标签，使用逗号分割
-  preview: false, // 是否启动预览模式，默认是false
-  previewTitle: '预览的标题', // 打印预览的标题
-  previewPrintBtnLabel: '预览结束，开始打印', // 打印预览的标题下方的按钮文本，点击可进入打印
-  zIndex: 20002, // 预览窗口的z-index，默认是20002，最好比默认值更高
-  previewBeforeOpenCallback() {
-    console.log('正在加载预览窗口！');
-  }, // 预览窗口打开之前的callback
-  previewOpenCallback() {
-    console.log('已经加载完预览窗口，预览打开了！')
-  }, // 预览窗口打开时的callback
-  beforeOpenCallback() {
-    //printShow.value = true;
-    console.log('开始打印之前！')
-  }, // 开始打印之前的callback
-  openCallback() {
-    console.log('执行打印了！')
-  }, // 调用打印时的callback
-  closeCallback() { console.log('关闭了打印工具！') }, // 关闭打印的callback(无法区分确认or取消)
-  clickMounted() { console.log('点击v-print绑定的按钮了！') }
-})
  
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
@@ -169,8 +107,8 @@ const open = async (type: string, id?: number) => {
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  express.value = await ExpressApi.getExpressList()
-  electOrder.value = await ElectronicsOrderApi.getElectronicsOrderList()
+  //express.value = await ExpressApi.getExpressList()
+  //electOrder.value = await ElectronicsOrderApi.getElectronicsOrderList()
   // 修改时，设置数据
   if (id) {
     formLoading.value = true
@@ -194,7 +132,7 @@ const submitForm = async () => {
   formLoading.value = true
   try {
     const data = formData.value as unknown as StoreOrderApi.StoreOrderVO
-    data.updateType = formType.value
+    data.updateType = 'orderSend'
     await StoreOrderApi.updateStoreOrder(data)
     message.success(t('common.updateSuccess'))
   
@@ -206,27 +144,7 @@ const submitForm = async () => {
   }
 }
 
-const selectExpress = (val) => {
-  let obj = {};
-  obj = express.value.find((item)=>{ // 这里的userList就是上面遍历的数据源
-      return item.code === val; // 筛选出匹配数据
-  })
-  formData.value.deliveryName = obj.name
-}
 
-const selectOrder = async (val) => {
-  if (val > 0) {
-    printHtml.value = await StoreOrderApi.getOrderHtml(formData.value.id,val)
-   }
-}
-
-const selectDelivery = (val) => {
-  if (val == 'face') {
-    isShow.value = false
-  } else if (val == 'normal') {
-    isShow.value = true
-  }
-}
 
 /** 重置表单 */
 const resetForm = () => {
@@ -234,7 +152,7 @@ const resetForm = () => {
     id: undefined,
     updateType: "",
     orderId: undefined,
-    orderType: 'send',
+    orderType: undefined,
     extendOrderId: undefined,
     uid: undefined,
     realName: undefined,

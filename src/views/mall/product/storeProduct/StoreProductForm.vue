@@ -9,11 +9,37 @@
     >
     <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
       <el-tab-pane label="基本信息" name="one">
+        <el-form-item label="展示店铺" prop="shopId">
+          <el-select
+            v-model="formValidate.shopId"
+            placeholder="选择店铺"
+            @change="selectShop"
+          >
+            <el-option
+              v-for="item in shopList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="商品名称" prop="store_name">
           <el-input v-model="formValidate.store_name" class="input-width" placeholder="请输入商品名称" />
         </el-form-item>
          <el-form-item label="商品分类" prop="cate_id">
-            <el-tree-select
+          <el-select
+            v-model="formValidate.cate_id"
+            placeholder="选择店铺"
+            @change="selectShop"
+          >
+            <el-option
+              v-for="item in categoryTree"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+            <!-- <el-tree-select
               v-model="formValidate.cate_id"
               :data="categoryTree"
               :props="{ label: 'name', value: 'id' }"
@@ -21,7 +47,7 @@
               placeholder="请选择商品分类"
               check-strictly
               default-expand-all
-            />
+            /> -->
         </el-form-item>
          <el-form-item label="关键字" prop="keyword">
           <el-input v-model="formValidate.keyword" class="input-width" placeholder="请输入关键字" />
@@ -202,7 +228,7 @@
            <vue-ueditor-wrap v-model="formValidate.description" :config="myConfig" @before-init="addCustomDialog"    style="width: 90%;" />
         </el-form-item>
       </el-tab-pane>
-      <el-tab-pane label="物流设置" name="four">
+      <!-- <el-tab-pane label="物流设置" name="four">
         <el-form-item label="运费设置">
           <el-radio-group v-model="postageSet">
             <el-radio :label="false">规定邮费</el-radio>
@@ -218,26 +244,15 @@
             <el-option v-for="(item,index) in templateList" :value="item.id" :key="index" :label="item.name"/>
           </el-select>
         </el-form-item>
-      </el-tab-pane>
-      <el-tab-pane label="营销设置" name="five">
+      </el-tab-pane> -->
+      <el-tab-pane label="营销设置" name="four">
         <el-form-item label="获得积分" prop="give_integral">
           <el-input v-model="formValidate.give_integral" class="input-width" placeholder="请输入获得积分" />
         </el-form-item>
-        <!-- <el-form-item label="是开启积分兑换" prop="isIntegral">
-          <el-input v-model="formData.isIntegral" placeholder="请输入是开启积分兑换" />
-        </el-form-item>
-        <el-form-item label="需要多少积分兑换 只在开启积分兑换时生效" prop="integral">
-          <el-input v-model="formData.integral" placeholder="请输入需要多少积分兑换 只在开启积分兑换时生效" />
-        </el-form-item> -->
-        <el-form-item label="是否新品" prop="is_new">
+        <!-- <el-form-item label="是否新品" prop="is_new">
           <el-radio-group v-model="formValidate.is_new">
             <el-radio :label="0">否</el-radio>
             <el-radio :label="1">是</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <!-- <el-form-item label="是否单独分佣" prop="isSub">
-          <el-radio-group v-model="formData.isSub">
-            <el-radio label="1">请选择字典生成</el-radio>
           </el-radio-group>
         </el-form-item> -->
       </el-tab-pane>
@@ -245,8 +260,8 @@
     </el-form>
     <template #footer>
       <el-button v-if="activeName !== 'one'" @click="upTab">上一步</el-button>
-      <el-button type="primary"  v-if="activeName !== 'five'" @click="downTab">下一步</el-button>
-      <el-button v-if="activeName == 'five'" @click="submitForm" type="primary" :disabled="formLoading">保 存</el-button>
+      <el-button type="primary"  v-if="activeName !== 'four'" @click="downTab">下一步</el-button>
+      <el-button v-if="activeName == 'four'" @click="submitForm" type="primary" :disabled="formLoading">保 存</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </Dialog>
@@ -254,8 +269,9 @@
 <script setup lang="ts">
 import * as StoreProductApi from '@/api/mall/product/product'
 import * as ProductCategoryApi from '@/api/mall/product/category'
-import { handleTree3 } from '@/utils/tree'
+// import { handleTree3 } from '@/utils/tree'
 import type { TabsPaneContext } from 'element-plus'
+import * as ShopApi from '@/api/mall/store/shop'
 
 
 const { t } = useI18n() // 国际化
@@ -305,10 +321,11 @@ const formData = ref({
   integral: undefined
 })
 const formValidate = ref({
+    shopId: null,
     imageArr:[],
     sliderImageArr: [],
     store_name: '',
-    cate_id: '',
+    cate_id: 0,
     keyword: '',
     unit_name: '',
     store_info: '',
@@ -369,11 +386,10 @@ const oneFormValidate = ref([
 ])
 
 const formRules = reactive({
+  shopId: [{ required: true, message: '请选择店铺', trigger: 'blur' }],
   image: [{ required: true, message: '商品图片不能为空', trigger: 'blur' }],
   slider_image: [{ required: true, message: '轮播图不能为空', trigger: 'blur' }],
   store_name: [{ required: true, message: '商品名称不能为空', trigger: 'blur' }],
-  store_info: [{ required: true, message: '商品简介不能为空', trigger: 'blur' }],
-  keyword: [{ required: true, message: '关键字不能为空', trigger: 'blur' }],
   cate_id: [{ required: true, message: '分类id不能为空', trigger: 'blur' }],
   price: [{ required: true, message: '商品价格不能为空', trigger: 'blur' }]
 })
@@ -472,6 +488,7 @@ const myConfig = reactive( {
       ],
 })
 const activeName = ref('one')
+const shopList = ref([])
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
@@ -479,6 +496,8 @@ const open = async (type: string, id?: number) => {
   dialogTitle.value = t('action.' + type)
   formType.value = type
   activeName.value = 'one'
+  getList()
+  
   resetForm()
 
   // 修改时，设置数据
@@ -489,9 +508,26 @@ const open = async (type: string, id?: number) => {
   }
   getInfo(id)
    // 获得分类树
-  await getTree()
+ // await getTree()
+ 
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+
+
+const selectShop = (val) => {
+  getTree(val)
+}
+
+
+const getList = async () => {
+  try {
+    const data = await ShopApi.getShopList()
+    shopList.value = data
+
+  } finally {
+    
+  }
+}
 
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
@@ -549,10 +585,10 @@ const upTab = () => {
     activeName.value = 'three'
     return
   }
-  if (activeName.value == 'five') {
-    activeName.value = 'four'
-    return
-  }
+  // if (activeName.value == 'five') {
+  //   activeName.value = 'four'
+  //   return
+  // }
 
 }
 const downTab = () => {
@@ -568,10 +604,10 @@ if (activeName.value == 'one') {
     activeName.value = 'four'
     return
   }
-  if (activeName.value == 'four') {
-    activeName.value = 'five'
-    return
-  }
+  // if (activeName.value == 'four') {
+  //   activeName.value = 'five'
+  //   return
+  // }
 }
 
   
@@ -632,7 +668,11 @@ const  getInfo  = (id) => {
         if(data.temp_id > 0) postageSet.value = true
         attrs.value = data.items || [];
         formValidate.value = data;
-        formValidate.value.cate_id = data.cate_id;
+        formValidate.value.cate_id = Number(data.cate_id);
+        if(formValidate.value.shopId){
+           console.log('shopId:',formValidate.value.shopId)
+            await getTree(formValidate.value.shopId)
+          }
         oneFormValidate.value = [data.attr];
         formValidate.value.header = [];
         generate();
@@ -703,12 +743,12 @@ const generate = () => {
 }
 
 /** 获得分类树 */
-const getTree = async () => {
-  const data = await ProductCategoryApi.getCategoryList({})
-  const tree = handleTree3(data, 'id', 'parentId')
+const getTree = async (val) => {
+  const data =  await ProductCategoryApi.getCategoryList({shopId: val})
+ // const tree = handleTree3(data, 'id', 'parentId')
  // console.log('tree:',tree)
   //const menu = { id: 0, name: '顶级分类', children: tree }
-  categoryTree.value = tree
+  categoryTree.value = data
 }
 
 const addCustomDialog  = () => {

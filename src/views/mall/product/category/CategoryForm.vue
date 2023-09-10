@@ -7,7 +7,20 @@
       label-width="80px"
       v-loading="formLoading"
     >
-      <el-form-item label="上级分类" prop="parentId">
+      <el-form-item label="展示店铺" prop="shopId">
+        <el-select
+          v-model="formData.shopId"
+          placeholder="选择店铺"
+        >
+          <el-option
+            v-for="item in shopList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
+      <!-- <el-form-item label="上级分类" prop="parentId">
         <el-tree-select
           v-model="formData.parentId"
           :data="categoryTree"
@@ -17,7 +30,7 @@
           check-strictly
           default-expand-all
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="分类名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入分类名称" />
       </el-form-item>
@@ -51,8 +64,9 @@
 <script setup lang="ts" name="ProductCategory">
 import { DICT_TYPE, getIntDictOptions } from '@/utils/dict'
 import { CommonStatusEnum } from '@/utils/constants'
-import { handleTree } from '@/utils/tree'
+// import { handleTree } from '@/utils/tree'
 import * as ProductCategoryApi from '@/api/mall/product/category'
+import * as ShopApi from '@/api/mall/store/shop'
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
 
@@ -62,26 +76,30 @@ const formLoading = ref(false) // 表单的加载中：1）修改时的数据加
 const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
+  shopId: null,
   name: '',
   picUrl: '',
   status: CommonStatusEnum.ENABLE,
   description: ''
 })
 const formRules = reactive({
-  parentId: [{ required: true, message: '请选择上级分类', trigger: 'blur' }],
+  shopId: [{ required: true, message: '请选择店铺', trigger: 'blur' }],
+  //parentId: [{ required: true, message: '请选择上级分类', trigger: 'blur' }],
   name: [{ required: true, message: '分类名称不能为空', trigger: 'blur' }],
-  picUrl: [{ required: true, message: '分类图片不能为空', trigger: 'blur' }],
+  //picUrl: [{ required: true, message: '分类图片不能为空', trigger: 'blur' }],
   sort: [{ required: true, message: '分类排序不能为空', trigger: 'blur' }],
   status: [{ required: true, message: '开启状态不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
-const categoryTree = ref<any[]>([]) // 分类树
+// const categoryTree = ref<any[]>([]) // 分类树
+const shopList = ref([])
 
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
   dialogTitle.value = t('action.' + type)
   formType.value = type
+  getList()
   resetForm()
   // 修改时，设置数据
   if (id) {
@@ -97,6 +115,15 @@ const open = async (type: string, id?: number) => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
+const getList = async () => {
+  try {
+    const data = await ShopApi.getShopList()
+    shopList.value = data
+
+  } finally {
+    
+  }
+}
 /** 提交表单 */
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
@@ -135,11 +162,11 @@ const resetForm = () => {
   formRef.value?.resetFields()
 }
 
-/** 获得分类树 */
-const getTree = async () => {
-  const data = await ProductCategoryApi.getCategoryList({})
-  const tree = handleTree(data, 'id', 'parentId')
-  const menu = { id: 0, name: '顶级分类', children: tree }
-  categoryTree.value = [menu]
-}
+// /** 获得分类树 */
+// const getTree = async () => {
+//   const data = await ProductCategoryApi.getCategoryList({})
+//   const tree = handleTree(data, 'id', 'parentId')
+//   const menu = { id: 0, name: '顶级分类', children: tree }
+//   categoryTree.value = [menu]
+// }
 </script>

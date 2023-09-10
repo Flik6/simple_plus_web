@@ -8,11 +8,11 @@
       <el-radio-group v-model="orderStatus" size="large"  fill="#DC143C" @change="queryOrderStatus">
         <el-radio-button label="">全部</el-radio-button>
         <el-radio-button label="0">未支付</el-radio-button>
-        <el-radio-button label="1">未发货</el-radio-button>
+        <el-radio-button label="1">制作中</el-radio-button>
         <el-radio-button label="2">待收货</el-radio-button>
-        <el-radio-button label="3">待评价</el-radio-button>
-        <el-radio-button label="4">交易完成</el-radio-button>
-        <el-radio-button label="5">已退款</el-radio-button>
+        <el-radio-button label="3">已收货/已取餐</el-radio-button>
+        <!-- <el-radio-button label="4">交易完成</el-radio-button>
+        <el-radio-button label="5">已退款</el-radio-button> -->
         <el-radio-button label="6">已删除</el-radio-button>
       </el-radio-group>
     </el-form-item>
@@ -95,6 +95,8 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" style="width: 100%">
       <el-table-column label="ID" align="center" prop="id" />
+      <el-table-column label="门店" align="center" prop="shopName" width="100" />
+      <el-table-column label="取餐号" align="center" prop="numberId" />
       <el-table-column label="订单号" align="center" prop="orderId" width="190" />
       <el-table-column label="用户id｜昵称" align="center"  width="120" >
         <template #default="scope">
@@ -103,17 +105,18 @@
       </el-table-column>
       <el-table-column label="用户姓名|电话" align="center" prop="realName" width="150">
         <template #default="scope">
-          <span>{{ scope.row.realName }}|{{ scope.row.userPhone }}</span>
+          <span v-if="scope.row.orderType == 'takeout'">{{ scope.row.realName }}|{{ scope.row.userPhone }}</span>
+          <span v-else>无</span>
         </template>
       </el-table-column>
       <el-table-column label="商品信息" align="center" prop="userAddress" width="350">
         <template #default="scope">
           <div class="tabBox" v-for="(val, i ) in scope.row.storeOrderCartInfoDOList" :key="i">
               <div class="tabBox_img">
-                  <img :src="val.cartInfo.productInfo.attrInfo.image" />
+                  <img :src="val.image" />
               </div>
-              <span class="tabBox_tit">{{ val.cartInfo.productInfo.storeName + ' | ' }}{{val.cartInfo.productInfo.attrInfo.sku}}</span>
-              <span class="tabBox_pice">{{ '￥'+ val.cartInfo.truePrice + ' x '+ val.cartInfo.cartNum}}</span>
+              <span class="tabBox_tit">{{ val.title + ' - ' }}{{val.spec}}</span>
+              <span class="tabBox_pice">{{ '￥'+ val.price + ' x '+ val.number}}</span>
           </div>
         </template>
       </el-table-column>
@@ -133,6 +136,19 @@
           <span v-else></span>
         </template>
       </el-table-column>
+      <el-table-column label="购买类型" align="center">
+        <template #default="scope">
+           <span v-if="scope.row.orderType=='takeout'">外卖</span>
+           <span v-if="scope.row.orderType=='takein'">自取</span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="预约取餐时间"
+        align="center"
+        prop="getTime"
+        :formatter="dateFormatter"
+        width="120"
+      />
       <el-table-column
         label="支付时间"
         align="center"
@@ -167,16 +183,7 @@
             @click="openForm('orderSend', scope.row.id)"
             v-hasPermi="['order:store-order:update']"
           >
-            发送货
-          </el-button>
-          <el-button
-            v-if = "scope.row.statusStr == '待收货'"
-            link
-            type="primary"
-            @click="openForm('sendInfo', scope.row.id)"
-            v-hasPermi="['order:store-order:update']"
-          >
-            配送信息
+            出单
           </el-button>
           <el-dropdown>
             <el-button type="primary" link><Icon icon="ep:d-arrow-right" /> 更多</el-button>
@@ -186,7 +193,6 @@
                 <el-dropdown-item @click="openForm('orderDetail', scope.row.id)">订单详情</el-dropdown-item>
                 <el-dropdown-item @click="openForm('orderRecord', scope.row.id)">订单记录</el-dropdown-item>
                 <el-dropdown-item @click="handleDelete(scope.row.id)">删除订单</el-dropdown-item>
-                <el-dropdown-item v-if = "scope.row.statusStr != '未支付'">小票打印</el-dropdown-item>
                 <el-dropdown-item v-if = "scope.row.statusStr != '未支付'" @click="openForm('remark', scope.row.id)">订单备注</el-dropdown-item>
                 <el-dropdown-item v-if = "scope.row.statusStr == '待收货'" @click="handleTake(scope.row.id)">后台收货</el-dropdown-item>
               </el-dropdown-menu>
@@ -268,14 +274,6 @@ const getList = async () => {
   loading.value = true
   try {
     const data = await StoreOrderApi.getStoreOrderPage(queryParams)
-   // const jsonObj = eval('(' + data.list[0].storeOrderCartInfoDOList[0].cartInfo + ')')
-    //console.log(jsonObj)
-    data.list.forEach((element, index) => {
-      element.storeOrderCartInfoDOList.forEach((e, n) => {
-         data.list[index].storeOrderCartInfoDOList[n].cartInfo = eval('(' + e.cartInfo + ')')
-      })
-     
-    });
     list.value = data.list
     //console.log("aa:",list.value)
     total.value = data.total

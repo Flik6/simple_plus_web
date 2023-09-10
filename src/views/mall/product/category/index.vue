@@ -17,6 +17,15 @@
           class="!w-240px"
         />
       </el-form-item>
+      <el-form-item label="店铺名称" prop="shopName">
+        <el-input
+          v-model="queryParams.shopName"
+          placeholder="请输入分类名称"
+          clearable
+          @keyup.enter="handleQuery"
+          class="!w-240px"
+        />
+      </el-form-item>
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -36,11 +45,7 @@
   <ContentWrap>
     <el-table v-loading="loading" :data="list" row-key="id" default-expand-all>
       <el-table-column label="分类名称" prop="name" sortable />
-      <el-table-column label="分类图片" align="center" prop="picUrl">
-        <template #default="scope">
-          <img v-if="scope.row.picUrl" :src="scope.row.picUrl" alt="分类图片" class="h-100px" />
-        </template>
-      </el-table-column>
+      <el-table-column label="所属门店" prop="shopName" sortable />
       <el-table-column label="分类排序" align="center" prop="sort" />
       <el-table-column label="开启状态" align="center" prop="status">
         <template #default="scope">
@@ -92,7 +97,8 @@ const { t } = useI18n() // 国际化
 const loading = ref(true) // 列表的加载中
 const list = ref<any[]>([]) // 列表的数据
 const queryParams = reactive({
-  name: undefined
+  name: undefined,
+  shopName:null
 })
 const queryFormRef = ref() // 搜索的表单
 

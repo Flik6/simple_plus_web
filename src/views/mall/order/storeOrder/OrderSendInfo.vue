@@ -34,7 +34,6 @@
 </template>
 <script setup lang="ts">
 import * as StoreOrderApi from '@/api/mall/order/storeOrder'
-import * as ExpressApi from '@/api/mall/order/express'
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -111,7 +110,7 @@ const open = async (type: string, id?: number) => {
   dialogTitle.value = t('action.' + type)
   formType.value = type
   resetForm()
-  express.value = await ExpressApi.getExpressList()
+  //express.value = await ExpressApi.getExpressList()
   // 修改时，设置数据
   if (id) {
     formLoading.value = true

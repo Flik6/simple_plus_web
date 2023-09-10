@@ -1,13 +1,15 @@
 <template>
  <el-drawer v-model="drawer" :title="dialogTitle" size="40%">
     <div>
-      <el-descriptions title="收货信息" :column="2">
+      <el-descriptions title="收货信息" :column="2" v-if="DetailData.orderType == 'takeout'">
         <el-descriptions-item label="用户昵称">{{ nickname }}</el-descriptions-item>
         <el-descriptions-item label="收货人">{{ DetailData.realName }}</el-descriptions-item>
         <el-descriptions-item label="联系电话">{{ DetailData.userPhone }}</el-descriptions-item>
         <el-descriptions-item label="收货地址">{{ DetailData.userAddress }}</el-descriptions-item>
       </el-descriptions>
       <el-descriptions title="订单信息" :column="2">
+        <el-descriptions-item label="门店">{{ DetailData.shopName }}</el-descriptions-item>
+        <el-descriptions-item label="取餐号">{{ DetailData.numberId }}</el-descriptions-item>
         <el-descriptions-item label="订单号">{{ DetailData.orderId }}</el-descriptions-item>
         <el-descriptions-item label="订单状态">{{ DetailData.statusStr }}</el-descriptions-item>
         <el-descriptions-item label="商品总数">{{ DetailData.totalNum }}</el-descriptions-item>

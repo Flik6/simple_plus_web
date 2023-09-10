@@ -1,5 +1,6 @@
 <template>
   <div v-if="type == 'image'">
+
     <ul
       v-for="(item, index) in value"
       :key="index"
@@ -38,6 +39,7 @@
         </div>
       </li>
     </ul>
+
     <div
       v-if="num > value.length"
       tabindex="0"
@@ -244,6 +246,10 @@ const urls = ref([])
 
 const value = computed({
   get() {
+    //  console.log('length:',props.modelValue.length)
+    if(!props.modelValue || props.modelValue.length == 0){
+        return []
+    }
     if (Array.isArray(props.modelValue)) {
       return props.modelValue
     }
@@ -281,7 +287,13 @@ function deleteMaterial(index) {
   }).then(function () {
     value.value.splice(index, 1)
     urls.value = []
+    // if (urls.value.length > 1 || props.num > 1) {
+    //   emit('update:modelValue', urls.value)
+    // } else {
+    //   emit('update:modelValue', urls.value[0])
+    // }
     emit('update:modelValue', value.value)
+
   })
 }
 function toSeleteMaterial() {
@@ -466,14 +478,16 @@ function beforeUpload(file) {
 
 const emit = defineEmits(['update:modelValue'])
 function sureUrls() {
+  console.log('value.value.length:',value.value.length)
   urls.value.forEach((item) => {
     value.value[value.value.length] = item
   })
+  console.log('urls.value:',value.value)
   listDialogVisible.value = false
-  if (urls.value.length > 1) {
-    emit('update:modelValue', urls.value)
+  if (urls.value.length > 1 || props.num > 1) {
+    emit('update:modelValue', value.value)
   } else {
-    emit('update:modelValue', urls.value[0])
+    emit('update:modelValue', value.value[0])
   }
   
   

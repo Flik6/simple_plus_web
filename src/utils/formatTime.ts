@@ -149,6 +149,13 @@ export const dateFormatter = (row, column, cellValue) => {
   return formatDate(cellValue)
 }
 
+export const dateFormatter2 = (row, column, cellValue) => {
+  if (!cellValue) {
+    return
+  }
+  return formatDate(cellValue,'HH:mm:ss')
+}
+
 /**
  * 设置起始日期，时间为00:00:00
  * @param param 传入日期

@@ -111,6 +111,7 @@ import * as NoticeApi from '@/api/system/notice'
 import PanelGroupT from './PanelGroupT.vue'
 import { formatTime } from '@/utils'
 import { useUserStore } from '@/store/modules/user'
+import avatarImg from '@/assets/imgs/avatar.gif'
 const userStore = useUserStore()
 const avatar = userStore.getUser.avatar ? userStore.getUser.avatar : avatarImg
 const { t } = useI18n()
