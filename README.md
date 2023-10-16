@@ -1,10 +1,3 @@
-<h1 style="text-align: center">yshop-pro意向电商商城系统</h1>
-
-
-#### 项目简介
-YSHOP-PRO 技术特色：移动端uniapp全新的ui、vue3全新全家桶、高并发高性能支持消息队列、异步任务、分布式锁、限流、冥等性等、支持多种支付(微信、支付宝)、支持批量上传商品、支持电子面单、支持微信统一登录各端等新特性！！！ 其他新特性尽情期待；
-
- 
-
-#### 官网地址：https://www.yixiang.co 
-
+意向点餐系统，类似肯德基点餐小程序模式，支持多门店模式，基础技术Java，uniapp（支持H5、微信小程序）
+采用当前流行技术组合的前后端分离点餐系统： SpringBoot、Spring Security OAuth2、MybatisPlus、SpringSecurity、jwt、redis、Vue3的前后端分离的系统， 
+包含店铺管理、积分兑换、云小票打印、图片素材库、订单管理、多规格sku、积分、优惠券、充值、多门店、微信公众号等功能，更适合企业或个人二次开发.

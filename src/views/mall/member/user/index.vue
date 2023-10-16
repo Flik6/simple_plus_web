@@ -2,12 +2,8 @@
   <ContentWrap>
      <el-tabs v-model="activeName"  @tab-click="handleClick">
       <el-tab-pane label="全部" name=""/>
-      <el-tab-pane label="微信小程序" name="wxapp"/>
-      <el-tab-pane label="支付宝小程序" name="aliapp"/>
-      <el-tab-pane label="微信公众号" name="wechat"/>
+      <el-tab-pane label="微信小程序" name="routine"/>
       <el-tab-pane label="H5" name="h5"/>
-      <el-tab-pane label="PC" name="pc"/>
-      <el-tab-pane label="APP" name="app"/>
     </el-tabs>
     <!-- 搜索工作栏 -->
     <el-form

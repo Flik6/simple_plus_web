@@ -122,6 +122,8 @@ const loginData = reactive({
   tenantEnable: import.meta.env.VITE_APP_TENANT_ENABLE,
   loginForm: {
     // tenantName: 'yshop',
+    //username: 'yshop002',
+    //password: '123456789',
     username: 'admin',
     password: 'admin123',
     captchaVerification: '',
@@ -134,6 +136,7 @@ const loginData = reactive({
 // 获取验证码
 const getCode = async () => {
   // 情况一，未开启：则直接登录
+  console.log('oginData.captchaEnable:',loginData.captchaEnable)
   if (loginData.captchaEnable === 'false') {
     await handleLogin({})
   } else {

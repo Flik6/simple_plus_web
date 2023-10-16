@@ -13,20 +13,27 @@
           <el-option label="微信支付" value="wxPay" />
         </el-select>
       </el-form-item>
+      <el-form-item label="支付id" prop="detailsId">
+        <el-input v-model="formData.detailsId" placeholder="请输入支付id" />
+      </el-form-item>
       <el-form-item label="应用id" prop="appid">
         <el-input v-model="formData.appid" placeholder="请输入应用id" />
       </el-form-item>
-      <el-form-item label="商户id" prop="mchId">
-        <el-input v-model="formData.mchId" placeholder="请输入商户id" />
+      <el-form-item label="微信商户id" prop="mchId">
+        <el-input v-model="formData.mchId" placeholder="请输入微信商户id" />
+      </el-form-item>
+      <el-form-item label="支付宝商户id" prop="seller">
+        <el-input v-model="formData.seller" placeholder="请输入支付宝商户id" />
       </el-form-item>
       <el-form-item label="证书存储类型" prop="certStoreType">
-        <el-select v-model="formData.certStoreType">
+        <el-select v-model="formData.certStoreType" placeholder="请选择类型" clearable>
           <el-option label="PATH" value="PATH" />
           <el-option label="STR" value="STR" />
           <el-option label="INPUT_STREAM" value="INPUT_STREAM" />
           <el-option label="CLASS_PATH" value="CLASS_PATH" />
           <el-option label="URL" value="URL" />
         </el-select>
+        <div style="color: red;">注意：需要证书的选择不需要不选择</div>
       </el-form-item>
       <el-form-item label="私钥或私钥证书" prop="keyPrivate">
         <el-input v-model="formData.keyPrivate" placeholder="请输入私钥或私钥证书" />
@@ -103,8 +110,9 @@ const formData = ref({
 })
 const formRules = reactive({
   payType: [{ required: true, message: '支付类型(支付渠道)不能为空', trigger: 'change' }],
+  detailsId: [{ required: true, message: '支付id不能为空', trigger: 'change' }],
   appid: [{ required: true, message: '应用id不能为空', trigger: 'change' }],
-  mchId: [{ required: true, message: '商户id不能为空', trigger: 'change' }],
+  //mchId: [{ required: true, message: '商户id不能为空', trigger: 'change' }],
   notifyUrl: [{ required: true, message: '异步回调地址不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref

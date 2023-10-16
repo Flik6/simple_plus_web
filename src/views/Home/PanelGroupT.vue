@@ -1,5 +1,5 @@
 <template>
-  <div class="divBox">
+  <div class="divBox" v-show="isShow">
       <el-row :gutter="24" class="dashboard-console-grid">
         <el-col v-bind="grid" class="ivu-mb">
           <el-card :bordered="false">
@@ -27,25 +27,25 @@
         </el-col>
         <el-col v-bind="grid" class="ivu-mb">
           <el-card :bordered="false">
-            <router-link :to="{ path: '' }" @click="warnTis">
+            <router-link :to="{ path: '/mall/coupons' }">
               <Icon icon="ep:ticket" style="color: #b37feb" :size="35" />
-              <p>电子券管理</p>
+              <p>优惠券管理</p>
             </router-link>
           </el-card>
         </el-col>
         <el-col v-bind="grid" class="ivu-mb">
           <el-card :bordered="false">
-            <router-link :to="{ path: '' }" @click="warnTis">
+            <router-link :to="{ path: '/mall/web-print' }">
                <Icon icon="ep:postcard" style="color: #ffd666" :size="35" />
-              <p>营销管理</p>
+              <p>打印机管理</p>
             </router-link>
           </el-card>
         </el-col>
         <el-col v-bind="grid" class="ivu-mb">
           <el-card :bordered="false">
-            <router-link :to="{ path: '' }" @click="warnTis">
+            <router-link :to="{ path: '/mall/shop' }" >
                <Icon icon="ep:notebook" style="color: #5cdbd3" :size="35" />
-              <p>分销管理</p>
+              <p>门店管理</p>
             </router-link>
           </el-card>
         </el-col>
@@ -69,7 +69,10 @@
     </div>
 </template>
 <script setup lang="ts">
-const message = useMessage() // 消息弹窗
+import { CACHE_KEY, useCache } from '@/hooks/web/useCache'
+
+const { wsCache } = useCache()
+
 
 const grid =ref({
   xl: 3,
@@ -79,8 +82,13 @@ const grid =ref({
   xs: 8,
 })
 
-const warnTis = () => {
-  return message.warning('还在开发中...')
+
+
+const user = wsCache.get(CACHE_KEY.USER)
+
+const isShow = ref(true)
+if(user.user.shopId > 0) {
+  isShow.value = false
 }
 
 </script>
