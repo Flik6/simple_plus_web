@@ -11,8 +11,8 @@
         <el-radio-button label="1">制作中</el-radio-button>
         <el-radio-button label="2">待收货</el-radio-button>
         <el-radio-button label="3">已收货/已取餐</el-radio-button>
-        <!-- <el-radio-button label="4">交易完成</el-radio-button>
-        <el-radio-button label="5">已退款</el-radio-button> -->
+        <!-- <el-radio-button label="4">交易完成</el-radio-button> -->
+        <el-radio-button label="5">退款单</el-radio-button>
         <el-radio-button label="6">已删除</el-radio-button>
       </el-radio-group>
     </el-form-item>
@@ -185,6 +185,15 @@
           >
             出单
           </el-button>
+          <el-button
+            v-if = "scope.row.statusStr == '退款中'"
+            link
+            type="primary"
+            @click="openForm('refundOrder', scope.row.id)"
+            v-hasPermi="['order:store-order:update']"
+          >
+            确认退款
+          </el-button>
           <el-dropdown>
             <el-button type="primary" link><Icon icon="ep:d-arrow-right" /> 更多</el-button>
             <template #dropdown>
@@ -218,6 +227,7 @@
   <StoreOrderRemark ref="formRef3" @success="getList" />
   <OrderDetail ref="formRef4" />
   <OrderRecord ref="formRef5" />
+  <StoreOrderRefund ref="formRef6" @success="getList" />
 </template>
 
 <script setup lang="ts" name="StoreOrder">
@@ -228,6 +238,7 @@ import StoreOrderForm from './StoreOrderForm.vue'
 import OrderSend from './OrderSend.vue'
 import OrderSendInfo from './OrderSendInfo.vue'
 import StoreOrderRemark from './StoreOrderRemark.vue'
+import StoreOrderRefund from './StoreOrderRefund.vue'
 import OrderDetail from './OrderDetail.vue'
 import OrderRecord from './OrderRecord.vue'
 import type { TabsPaneContext } from 'element-plus'
@@ -303,6 +314,7 @@ const formRef2 = ref()
 const formRef3 = ref()
 const formRef4 = ref()
 const formRef5 = ref()
+const formRef6 = ref()
 const openForm = (type: string, id?: number) => {
   if (type == 'updateOrder') {
     formRef.value.open(type, id)
@@ -316,6 +328,8 @@ const openForm = (type: string, id?: number) => {
     formRef4.value.open(type, id)
   }else if (type == 'orderRecord') {
     formRef5.value.open(type, id)
+  }else if (type == 'refundOrder') {
+    formRef6.value.open(type, id)
   }
 
   

@@ -8,153 +8,27 @@
       :inline="true"
       label-width="68px"
     >
-      <el-form-item label="用户id" prop="userId">
+      <el-form-item label="用户名" prop="userId">
         <el-input
           v-model="queryParams.userId"
-          placeholder="请输入用户id"
+          placeholder="请输入用户名"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
       </el-form-item>
-      <el-form-item label="商品id" prop="productId">
-        <el-input
-          v-model="queryParams.productId"
-          placeholder="请输入商品id"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="数量" prop="number">
+
+      <el-form-item label="订单号" prop="number">
         <el-input
           v-model="queryParams.number"
-          placeholder="请输入数量"
+          placeholder="请输入订单号"
           clearable
           @keyup.enter="handleQuery"
           class="!w-240px"
         />
-      </el-form-item>
-      <el-form-item label="单个商品积分" prop="score">
-        <el-input
-          v-model="queryParams.score"
-          placeholder="请输入单个商品积分"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="总消耗积分" prop="totalScore">
-        <el-input
-          v-model="queryParams.totalScore"
-          placeholder="请输入总消耗积分"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="下单ip" prop="ip">
-        <el-input
-          v-model="queryParams.ip"
-          placeholder="请输入下单ip"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="快递编号" prop="expressNumber">
-        <el-input
-          v-model="queryParams.expressNumber"
-          placeholder="请输入快递编号"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="快递公司" prop="expressCompany">
-        <el-input
-          v-model="queryParams.expressCompany"
-          placeholder="请输入快递公司"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="收货名称" prop="customerName">
-        <el-input
-          v-model="queryParams.customerName"
-          placeholder="请输入收货名称"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="收货电话" prop="customerPhone">
-        <el-input
-          v-model="queryParams.customerPhone"
-          placeholder="请输入收货电话"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="收货地址" prop="customerAddress">
-        <el-input
-          v-model="queryParams.customerAddress"
-          placeholder="请输入收货地址"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="订单状态:0=取消订单,1=正常啊" prop="status">
-        <el-select
-          v-model="queryParams.status"
-          placeholder="请选择订单状态:0=取消订单,1=正常啊"
-          clearable
-          class="!w-240px"
-        >
-          <el-option label="请选择字典生成" value="" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="已支付:0=否" prop="havePaid">
-        <el-input
-          v-model="queryParams.havePaid"
-          placeholder="请输入已支付:0=否"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="已发货:0=否" prop="haveDelivered">
-        <el-input
-          v-model="queryParams.haveDelivered"
-          placeholder="请输入已发货:0=否"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="已收货:0=否" prop="haveReceived">
-        <el-input
-          v-model="queryParams.haveReceived"
-          placeholder="请输入已收货:0=否"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="添加时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
+      </el-form-item>>
+    
+     
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>

@@ -86,6 +86,11 @@ export const takeStoreOrder = async (id: number) => {
   return await request.get({ url: `/order/store-order/take?id=` + id })
 }
 
+export const rufundStoreOrder = async (data) => {
+  return await request.post({ url: `/order/store-order/refund`,data })
+}
+
+
 export const getStoreOrderRecordList = async (id: number) => {
   return await request.get({ url: `/order/store-order/record-list?id=` + id })
 }

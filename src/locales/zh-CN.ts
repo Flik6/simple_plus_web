@@ -281,6 +281,7 @@ export default {
     couponRecord: '优惠券领取记录',
     yue: '积分余额',
     userDetail: '用户详情',
+    refundOrder: '订单退款',
     orderRecord: '订单记录',
     orderDetail: '订单详情',
     updateOrder: '修改订单',
