@@ -38,7 +38,7 @@
         <el-descriptions-item label="快递公司">{{ DetailData.expressCompany }}</el-descriptions-item>
         <el-descriptions-item label="快递单号">
           {{ DetailData.expressNumber }} 
-          <el-button type="primary" @click="getLogistic(DetailData.deliverySn,DetailData.deliveryId)">物流追踪</el-button>
+          <el-button type="primary" @click="getLogistic(DetailData.expressSn,DetailData.expressNumber)">物流追踪</el-button>
         </el-descriptions-item>
       </el-descriptions>
       <el-timeline>
@@ -78,13 +78,13 @@ const open = async (type: string, id?: number) => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
-//const getLogistic = async(deliverySn,deliveryId) => {
-//   const res  = await StoreOrderApi.getLogistic(deliverySn, deliveryId)
-//   if (res.success == "false") {
-//     message.error(res.reason)
-//   }
-//   logisticResult.value = res.traces
-// }
+const getLogistic = async(deliverySn,deliveryId) => {
+  const res  = await OrderApi.getLogistic(deliverySn, deliveryId)
+  if (res.success == "false") {
+    message.error(res.reason)
+  }
+  logisticResult.value = res.traces
+}
 </script>
 <style scoped>
 </style>

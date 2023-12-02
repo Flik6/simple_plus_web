@@ -1,6 +1,6 @@
 <template>
   <ContentWrap>
-    <el-tabs v-model="activeName"  @tab-click="handleClick">
+    <el-tabs v-model="activeName">
       <el-tab-pane label="全部订单" name="first"/>
     </el-tabs>
     <el-form-item label="订单状态：" >
@@ -104,10 +104,12 @@
       />
       <el-table-column label="操作" align="center" fixed="right" width="150">
         <template #default="scope">
+          <div class="flex justify-center items-center">
           <el-button
             link
             type="primary"
-            @click="openForm('update', scope.row.id)"
+            @click="openForm('orderSend', scope.row.id)"
+            v-if = "scope.row.haveDelivered == 0 && scope.row.havePaid == 1"
             v-hasPermi="['score:order:update']"
           >
             发货
@@ -118,10 +120,11 @@
               <el-dropdown-menu>
                 <el-dropdown-item @click="openForm('orderDetail', scope.row.id)">订单详情</el-dropdown-item>
                 <el-dropdown-item @click="handleDelete(scope.row.id)">删除订单</el-dropdown-item>
-                <el-dropdown-item v-if = "scope.row.statusStr == '待收货'" @click="handleTake(scope.row.id)">后台收货</el-dropdown-item>
+                <el-dropdown-item v-if = "scope.row.haveDelivered == 1 && scope.row.haveReceived == 0" @click="handleTake(scope.row.id)">后台收货</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
+        </div>
         </template>
       </el-table-column>
     </el-table>
@@ -198,12 +201,8 @@ const resetQuery = () => {
 const formRef = ref()
 const formRef4 = ref()
 const openForm = (type: string, id?: number) => {
-  if (type == 'updateOrder') {
+  if (type == 'orderSend') {
     formRef.value.open(type, id)
-  } else if (type == 'orderSend') {
-    formRef1.value.open(type, id)
-  }else if (type == 'sendInfo') {
-    formRef2.value.open(type, id)
   }else if (type == 'orderDetail') {
     formRef4.value.open(type, id)
   }
@@ -235,6 +234,19 @@ const handleExport = async () => {
   } finally {
     exportLoading.value = false
   }
+}
+
+/** 确认收货按钮操作 */
+const handleTake = async (id: number) => {
+  try {
+    // 删除的二次确认
+    await message.confirm('修改收货状态')
+    // 发起删除
+    await OrderApi.takeStoreOrder(id)
+    message.success(t('common.updateSuccess'))
+    // 刷新列表
+    await getList()
+  } catch {}
 }
 
 /** 初始化 **/

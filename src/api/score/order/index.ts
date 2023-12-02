@@ -48,3 +48,12 @@ export const deleteOrder = async (id: number) => {
 export const exportOrder = async (params) => {
   return await request.download({ url: `/score/order/export-excel`, params })
 }
+
+export const getLogistic = async (param1,param2) => {
+  return await request.get({ url: `/order/express/getLogistic?shipperCode=` + param1 + `&logisticCode=` + param2})
+}
+
+// 收货
+export const takeStoreOrder = async (id) => {
+  return await request.get({ url: `/score/order/take?id=` + id })
+}
