@@ -1,11 +1,20 @@
 <template>
  <el-drawer v-model="drawer" :title="dialogTitle" size="40%">
     <div>
-      <el-descriptions title="收货信息" :column="2" v-if="DetailData.orderType == 'takeout'">
+      <el-descriptions title="收货信息1" :column="2" v-if="DetailData.orderType == 'takeout'">
         <el-descriptions-item label="用户昵称">{{ nickname }}</el-descriptions-item>
         <el-descriptions-item label="收货人">{{ DetailData.realName }}</el-descriptions-item>
         <el-descriptions-item label="联系电话">{{ DetailData.userPhone }}</el-descriptions-item>
         <el-descriptions-item label="收货地址">{{ DetailData.userAddress }}</el-descriptions-item>
+      </el-descriptions>
+      <el-descriptions title="商品明细" :column="3">
+        <div v-for="(val, i ) in product" :key="i">
+          <el-descriptions-item label="商品图片">
+            <el-image style="width: 40px; height: 40px" :src="val.image" :fit="fit" />
+          </el-descriptions-item>
+          <el-descriptions-item label="商品名称">{{ val.title + ' - ' }}{{val.spec}}</el-descriptions-item>
+          <el-descriptions-item label="商品价格">{{ '￥'+ val.price + ' x '+ val.number}}</el-descriptions-item>
+       </div>
       </el-descriptions>
       <el-descriptions title="订单信息" :column="2">
         <el-descriptions-item label="门店">{{ DetailData.shopName }}</el-descriptions-item>
@@ -60,13 +69,15 @@ const drawer = ref(false)
 const DetailData = ref({})
 const nickname = ref('')
 const logisticResult = ref({})
+const product = ref([])
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   drawer.value = true
   dialogTitle.value = t('action.' + type)
   DetailData.value = await StoreOrderApi.getStoreOrder(id)
   nickname.value = DetailData.value.userRespVO.nickname
-  console.log('aa:'+DetailData.value.userRespVO.nickname )
+  product.value = DetailData.value.storeOrderCartInfoDOList
+  console.log('aa:',DetailData.value )
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
