@@ -307,8 +307,8 @@ function getMaterialgroupPage() {
   materialgroupLoading.value = true
   materialgroupPage({
     total: 0, // 总页数
-    page: 1, // 当前页数
-    size: 100, // 每页显示多少条
+    pageNo: 1, // 当前页数
+    pageSize: 100, // 每页显示多少条
     ascs: [], // 升序字段
     sort: 'create_time,desc' // 降序字段
   }).then((response) => {
@@ -390,8 +390,8 @@ function getMaterialPage(initPage) {
   getPage(
     Object.assign(
       {
-        page: initPage.currentPage - 1,
-        size: initPage.pageSize,
+        pageNo: initPage.currentPage - 1,
+        pageSize: initPage.pageSize,
         descs: initPage.descs,
         ascs: initPage.ascs,
         sort: 'create_time,desc'
