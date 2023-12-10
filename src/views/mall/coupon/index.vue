@@ -80,7 +80,7 @@
       <el-table-column
         label="结束时间"
         align="center"
-        prop="endtIme"
+        prop="endTime"
         :formatter="dateFormatter"
         width="170"
       />
