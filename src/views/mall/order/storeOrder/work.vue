@@ -2,7 +2,7 @@
    <ContentWrap>
     <el-tabs v-model="activeName"  @tab-click="handleClick">
       <el-tab-pane label="全部订单" name="first"/>
-      <el-tab-pane label="普通订单" name="second"/>
+      <!-- <el-tab-pane label="普通订单" name="second"/> -->
     </el-tabs>
   </ContentWrap>
   <ContentWrap>
@@ -14,6 +14,18 @@
       :inline="true"
       label-width="68px"
     >
+    <el-form-item label="选择门店" prop="orderId">
+      <el-select
+          v-model="queryParams.shopId"
+        >
+          <el-option
+            v-for="item in shopList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
+      </el-form-item>
       <el-form-item label="订单号" prop="orderId">
         <el-input
           v-model="queryParams.orderId"
@@ -35,53 +47,62 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-          v-hasPermi="['order:store-order:export']"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
-        </el-button>
       </el-form-item>
+      <el-form-item label="">
+        <el-switch v-model="isNotice" active-text="订单提醒开启中" inactive-text="订单提醒关闭中" />
+      </el-form-item> 
     </el-form>
-    
+
   </ContentWrap>
 
   <!-- 列表 -->
   <ContentWrap>
-
+     <audio id="buttonAudio"  src="/voice_new_order.mp3" v-show="false" controls></audio>
       <el-row :gutter="24">
         <el-col :span="6" v-for="(order,k) in list" :key="k">
           <div >
-            <el-card class="box-card">
+            <el-card class="box-card" :body-style="{ background:'#0a5ba6' }">
               <template #header>
-                <div class="card-header">
-                  <span>{{ order.shopName }}</span>
+                <div class="card-header" style="text-align:center">
+                  订单号:{{ order.orderId }}
                 </div>
               </template>
-              <div>取餐号:{{ order.numberId }}</div>
-              <div>下单时间:{{ formatDate(order.createTime) }}</div>
-              <div>取餐时间:{{ formatDate(order.getTime) }}</div>
-              <div>类型:{{ order.orderType == 'takeout' ? '外卖' : '自取' }}</div>
-              <div>  
-                <el-button
-                  type="primary"
-                  @click="openForm('orderDetail', order.id)"
-                  v-hasPermi="['order:store-order:update']"
-                >详情</el-button>
-                <el-button
-                  type="primary"
-                  @click="openForm('orderSend', order.id)"
-                  v-hasPermi="['order:store-order:update']"
-                >出单</el-button>
-                <el-button
-                  type="danger"
-                  @click="handleDelete(order.id)"
-                  v-hasPermi="['order:store-order:update']"
-                >删除</el-button>
-              </div>
+              <template #default>
+                <div style="color:#ffffff;text-align:center;">
+                  <div v-if="order.orderType == 'takeout'">
+                    <div style="font-size:20px;font-weight: bolder;">外卖</div>
+                    <div style="margin-top:5px">联系电话:{{ order.userPhone }}</div>
+                  </div>
+                  <div v-else-if="order.orderType == 'takein'">
+                    <div style="font-size:20px;font-weight: bolder;">自取</div>
+                    <div style="margin-top:5px">取餐号:{{ order.numberId }}</div>
+                  </div>
+                  <div style="font-size:20px;font-weight: bolder;">
+                    <span v-if="order.storeOrderCartInfoDOList.length > 1">
+                      多份菜品，请查看详情
+                    </span>
+                    <span v-else>{{ order.storeOrderCartInfoDOList[0].title }}×{{ order.storeOrderCartInfoDOList[0].number }}
+                      {{ order.storeOrderCartInfoDOList[0].spec }}
+                    </span>
+                  </div>
+                  
+                  <div style="margin-top:30px;">  
+                    <el-button
+                      type="primary"
+                      @click="openForm('orderDetail', order.id)"
+                      v-hasPermi="['order:store-order:update']"
+                    >详情</el-button>
+                    <el-button
+                      type="primary"
+                      @click="openForm('orderSend', order.id)"
+                      v-hasPermi="['order:store-order:update']"
+                    >出单</el-button>
+                  </div>
+                </div>
+              </template>
+              <template #footer>
+                <div style="text-align:center">下单时间:{{ formatDate(order.createTime) }}</div>
+            </template>
             </el-card>
          </div>
          </el-col>
@@ -99,8 +120,9 @@
 
 <script setup lang="ts" name="StoreOrder">
 // import { dateFormatter } from '@/utils/formatTime'
-import download from '@/utils/download'
+// import download from '@/utils/download'
 import * as StoreOrderApi from '@/api/mall/order/storeOrder'
+import * as ShopApi from '@/api/mall/store/shop'
 import StoreOrderForm from './StoreOrderForm.vue'
 import OrderSend from './OrderSend.vue'
 import OrderSendInfo from './OrderSendInfo.vue'
@@ -109,8 +131,9 @@ import OrderDetail from './OrderDetail.vue'
 import OrderRecord from './OrderRecord.vue'
 import type { TabsPaneContext } from 'element-plus'
 import { formatDate } from '@/utils/formatTime'
-const message = useMessage() // 消息弹窗
+//const message = useMessage() // 消息弹窗
 //const { t } = useI18n() // 国际化
+// import Speech from 'speak-tts';
 
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
@@ -124,13 +147,17 @@ const queryParams = reactive({
   createTime: [],
   orderStatus: 1,
   payStatus: "",
-  numberId: undefined
+  numberId: undefined,
+  type: 'work',
+  shopId: undefined
 
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
+// const exportLoading = ref(false) // 导出的加载中
 
 const activeName = ref('first')
+const isNotice = ref(true)
+const shopList = ref([])
 
 
 
@@ -138,6 +165,15 @@ const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab, event)
 }
 
+const getShopList = async () => {
+  try {
+    const data = await ShopApi.getShopList()
+    shopList.value = data
+
+  } finally {
+    
+  }
+}
 
 /** 查询列表 */
 const getList = async () => {
@@ -152,7 +188,37 @@ const getList = async () => {
   }
 }
 
+setInterval(function() {
+  orderNotice()
+},4000);
 
+setInterval(function() {
+  getList()
+},5000);
+
+
+const orderNoticeVoice = () => {
+  if(isNotice.value){
+    ElNotification({
+      title: '新订单通知',
+      message: '你有个新的订单哦，请注意查看！',
+      type: 'success',
+      duration: 1000
+    })
+    let buttonAudio = document.getElementById('buttonAudio')
+    buttonAudio.play().catch((err)=>{
+      console.log(err)
+    });
+  }
+
+}
+
+const orderNotice = async() => {
+  const data = await StoreOrderApi.orderNoticeUrl()
+  if(data > 0){
+    orderNoticeVoice()
+  }
+}
 
 /** 搜索按钮操作 */
 const handleQuery = () => {
@@ -191,63 +257,13 @@ const openForm = (type: string, id?: number) => {
   
 }
 
-/** 删除按钮操作 */
-const handleDelete = async (id: number) => {
-  try {
-    // 删除的二次确认
-    await message.delConfirm()
-    // 发起删除
-    await StoreOrderApi.deleteStoreOrder(id)
-    message.success(t('common.delSuccess'))
-    // 刷新列表
-    await getList()
-  } catch {}
-}
 
-/** 确认付款按钮操作 */
-// const handlePay = async (id: number) => {
-//   try {
-//     // 删除的二次确认
-//     await message.confirm('修改为支付状态')
-//     // 发起删除
-//     await StoreOrderApi.payStoreOrder(id)
-//     message.success(t('common.updateSuccess'))
-//     // 刷新列表
-//     await getList()
-//   } catch {}
-// }
-
-// /** 确认收货按钮操作 */
-// const handleTake = async (id: number) => {
-//   try {
-//     // 删除的二次确认
-//     await message.confirm('修改收货状态')
-//     // 发起删除
-//     await StoreOrderApi.takeStoreOrder(id)
-//     message.success(t('common.updateSuccess'))
-//     // 刷新列表
-//     await getList()
-//   } catch {}
-// }
-
-/** 导出按钮操作 */
-const handleExport = async () => {
-  try {
-    // 导出的二次确认
-    await message.exportConfirm()
-    // 发起导出
-    exportLoading.value = true
-    const data = await StoreOrderApi.exportStoreOrder(queryParams)
-    download.excel(data, '订单.xls')
-  } catch {
-  } finally {
-    exportLoading.value = false
-  }
-}
 
 /** 初始化 **/
 onMounted(() => {
   getList()
+  getShopList()
+
 })
 </script>
 
