@@ -7,18 +7,48 @@
         <el-descriptions-item label="联系电话">{{ DetailData.userPhone }}</el-descriptions-item>
         <el-descriptions-item label="收货地址">{{ DetailData.userAddress }}</el-descriptions-item>
       </el-descriptions>
-      <el-descriptions title="商品明细" :column="3">
-        <div v-for="(val, i ) in product" :key="i">
-          <el-descriptions-item label="商品图片">
-            <el-image style="width: 40px; height: 40px" :src="val.image" :fit="fit" />
+      <el-descriptions title="商品明细" :column="1">
+          <el-descriptions-item label="菜品">
+            <div v-for="(num,k) in addProductMark + 1" :key="k">
+              <div v-if="num > 1" style="text-align:center;font-weight:bold;font-size:22px">
+                第{{ num - 1 }}次加菜
+              </div>
+              <div v-else style="text-align:center;font-weight:bold;font-size:22px">
+                首次点菜
+              </div>
+              <table width="100%">
+                <tr style="font-weight:bold;height:50px">
+                  <td>图片</td>
+                  <td>名称</td>
+                  <td>价格</td>
+                  <td>数量</td>
+                  <td>状态</td>
+                </tr>
+                <tr  v-for="(val, i ) in product" :key="i" >
+                    <td v-if="val.addProductMark == num-1 "><el-image style="width: 40px; height: 40px" :src="val.image" :fit="fit" /></td>
+                    <td v-if="val.addProductMark == num-1">{{ val.title}}</td>
+                    <td v-if="val.addProductMark == num-1">{{ '￥'+ val.price}}</td>
+                    <td v-if="val.addProductMark == num-1">{{ ' x '+ val.number}}</td>
+                    <td v-if="val.addProductMark == num-1">
+                      <el-tag  type="success" v-if="val.isOrder==1">已出单</el-tag>
+                      <el-tag  type="danger" v-else>未出单</el-tag>
+                    </td>
+                </tr>
+              </table>
+            </div>
           </el-descriptions-item>
-          <el-descriptions-item label="商品名称">{{ val.title + ' - ' }}{{val.spec}}</el-descriptions-item>
-          <el-descriptions-item label="商品价格">{{ '￥'+ val.price + ' x '+ val.number}}</el-descriptions-item>
-       </div>
       </el-descriptions>
       <el-descriptions title="订单信息" :column="2">
+        <template #title>
+          订单信息
+          <el-tag  type="danger" v-if="DetailData.orderType=='desk'">堂食</el-tag>
+          <el-tag  type="danger" v-if="DetailData.orderType=='takeout'">外卖</el-tag>
+          <el-tag  type="danger" v-if="DetailData.orderType=='takein'">自取</el-tag>
+        </template>
         <el-descriptions-item label="门店">{{ DetailData.shopName }}</el-descriptions-item>
         <el-descriptions-item label="取餐号">{{ DetailData.numberId }}</el-descriptions-item>
+        <el-descriptions-item label="桌位号">{{ DetailData.deskNumber ? DetailData.deskNumber : '无' }}</el-descriptions-item>
+        <el-descriptions-item label="就餐人数">{{ DetailData.deskPeople ? DetailData.deskPeople : '无' }}</el-descriptions-item>
         <el-descriptions-item label="订单号">{{ DetailData.orderId }}</el-descriptions-item>
         <el-descriptions-item label="订单状态">{{ DetailData.statusStr }}</el-descriptions-item>
         <el-descriptions-item label="商品总数">{{ DetailData.totalNum }}</el-descriptions-item>
@@ -70,6 +100,7 @@ const DetailData = ref({})
 const nickname = ref('')
 const logisticResult = ref({})
 const product = ref([])
+const addProductMark = ref(0)
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   drawer.value = true
@@ -77,7 +108,10 @@ const open = async (type: string, id?: number) => {
   DetailData.value = await StoreOrderApi.getStoreOrder(id)
   nickname.value = DetailData.value.userRespVO.nickname
   product.value = DetailData.value.storeOrderCartInfoDOList
-  console.log('aa:',DetailData.value )
+  //获取加餐数量
+  addProductMark.value = DetailData.value.storeOrderCartInfoDOList[DetailData.value.storeOrderCartInfoDOList.length - 1].addProductMark
+
+  console.log('addProductMark.value:',addProductMark.value )
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 

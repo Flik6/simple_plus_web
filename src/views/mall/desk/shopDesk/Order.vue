@@ -1,10 +1,8 @@
 <template>
-   <ContentWrap>
+ <el-drawer v-model="drawer" :title="dialogTitle" size="60%">
+  <ContentWrap>
     <el-tabs v-model="activeName"  @tab-click="handleClick">
       <el-tab-pane label="全部订单" name=""/>
-      <el-tab-pane label="堂食订单" name="desk"/>
-      <el-tab-pane label="外卖订单" name="takeout"/>
-      <el-tab-pane label="自取订单" name="takein"/>
     </el-tabs>
     <el-form-item label="订单状态：" >
       <el-radio-group v-model="orderStatus" size="large"  fill="#DC143C" @change="queryOrderStatus">
@@ -63,31 +61,9 @@
           class="!w-240px"
         />
       </el-form-item>
-
-      <el-form-item label="创建时间" prop="createTime">
-        <el-date-picker
-          v-model="queryParams.createTime"
-          value-format="YYYY-MM-DD HH:mm:ss"
-          type="daterange"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
-          class="!w-240px"
-        />
-      </el-form-item>
-     
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-          v-hasPermi="['order:store-order:export']"
-        >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
-        </el-button>
       </el-form-item>
     </el-form>
     
@@ -98,7 +74,6 @@
     <el-table v-loading="loading" :data="list" style="width: 100%">
       <el-table-column label="ID" align="center" prop="id" />
       <el-table-column label="门店" align="center" prop="shopName" width="100" />
-      <el-table-column label="取餐号" align="center" prop="numberId" />
       <el-table-column label="桌号" align="center" prop="deskNumber" />
       <el-table-column label="订单号" align="center" prop="orderId" width="240">
         <template #default="scope">
@@ -111,7 +86,7 @@
       </el-table-column>
       <el-table-column label="用户id｜昵称" align="center"  width="120" >
         <template #default="scope">
-          <span>{{ scope.row.uid }}|{{ scope.row.userRespVO ? scope.row.userRespVO.nickname : '无' }}</span>
+          <span>{{ scope.row.uid }}|{{ scope.row.userRespVO.nickname }}</span>
         </template>
       </el-table-column>
       <el-table-column label="用户姓名|电话" align="center" prop="realName" width="150">
@@ -154,13 +129,6 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="预约取餐时间"
-        align="center"
-        prop="getTime"
-        :formatter="dateFormatter"
-        width="120"
-      />
-      <el-table-column
         label="支付时间"
         align="center"
         prop="payTime"
@@ -196,25 +164,12 @@
           >
             出单
           </el-button>
-          <el-button
-            v-if = "scope.row.statusStr == '退款中'"
-            link
-            type="primary"
-            @click="openForm('refundOrder', scope.row.id)"
-            v-hasPermi="['order:store-order:update']"
-          >
-            确认退款
-          </el-button>
           <el-dropdown>
             <el-button type="primary" link><Icon icon="ep:d-arrow-right" /> 更多</el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item v-if = "scope.row.statusStr == '未支付'" @click="handlePay(scope.row.id)">确认付款</el-dropdown-item>
                 <el-dropdown-item @click="openForm('orderDetail', scope.row.id)">订单详情</el-dropdown-item>
-                <el-dropdown-item @click="openForm('orderRecord', scope.row.id)">订单记录</el-dropdown-item>
-                <el-dropdown-item @click="handleDelete(scope.row.id)">删除订单</el-dropdown-item>
-                <el-dropdown-item v-if = "scope.row.statusStr != '未支付'" @click="openForm('remark', scope.row.id)">订单备注</el-dropdown-item>
-                <el-dropdown-item v-if = "scope.row.statusStr == '待收货'" @click="handleTake(scope.row.id)">后台收货</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -235,23 +190,19 @@
   <StoreOrderForm ref="formRef" @success="getList" />
   <OrderSend ref="formRef1" @success="getList" />
   <OrderSendInfo ref="formRef2" @success="getList" />
-  <StoreOrderRemark ref="formRef3" @success="getList" />
   <OrderDetail ref="formRef4" />
-  <OrderRecord ref="formRef5" />
-  <StoreOrderRefund ref="formRef6" @success="getList" />
+  </el-drawer>
 </template>
-
-<script setup lang="ts" name="StoreOrder">
+<script setup lang="ts">
+// import * as StoreOrderApi from '@/api/mall/order/storeOrder'
+// import { formatDate } from '@/utils/formatTime'
+//const message = useMessage() // 消息弹窗
 import { dateFormatter } from '@/utils/formatTime'
-import download from '@/utils/download'
 import * as StoreOrderApi from '@/api/mall/order/storeOrder'
-import StoreOrderForm from './StoreOrderForm.vue'
-import OrderSend from './OrderSend.vue'
-import OrderSendInfo from './OrderSendInfo.vue'
-import StoreOrderRemark from './StoreOrderRemark.vue'
-import StoreOrderRefund from './StoreOrderRefund.vue'
-import OrderDetail from './OrderDetail.vue'
-import OrderRecord from './OrderRecord.vue'
+import StoreOrderForm from '@/views/mall/order/storeOrder/StoreOrderForm.vue'
+import OrderSend from '@/views/mall/order/storeOrder/OrderSend.vue'
+import OrderSendInfo from '@/views/mall/order/storeOrder/OrderSendInfo.vue'
+import OrderDetail from '@/views/mall/order/storeOrder/OrderDetail.vue'
 import type { TabsPaneContext } from 'element-plus'
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
@@ -268,15 +219,27 @@ const queryParams = reactive({
   createTime: [],
   orderStatus: "",
   payStatus: "",
-  orderType: ""
+  orderType: "",
+  deskId: 0
 
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
 
 const activeName = ref('')
 const orderStatus = ref('')
 const payStatus = ref('')
+const dialogTitle = ref('') // 弹窗的标题
+const drawer = ref(false)
+/** 打开弹窗 */
+const open = async (type: string, id?: number) => {
+  drawer.value = true
+  dialogTitle.value = t('action.' + type)
+  console.log('deskId:',id)
+  queryParams.deskId = id
+  getList()
+}
+defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab.paneName, event)
@@ -306,8 +269,6 @@ const getList = async () => {
   }
 }
 
-
-
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.pageNo = 1
@@ -324,10 +285,7 @@ const resetQuery = () => {
 const formRef = ref()
 const formRef1 = ref()
 const formRef2 = ref()
-const formRef3 = ref()
 const formRef4 = ref()
-const formRef5 = ref()
-const formRef6 = ref()
 const openForm = (type: string, id?: number) => {
   if (type == 'updateOrder') {
     formRef.value.open(type, id)
@@ -335,31 +293,12 @@ const openForm = (type: string, id?: number) => {
     formRef1.value.open(type, id)
   }else if (type == 'sendInfo') {
     formRef2.value.open(type, id)
-  }else if (type == 'remark') {
-    formRef3.value.open(type, id)
   }else if (type == 'orderDetail') {
     formRef4.value.open(type, id)
-  }else if (type == 'orderRecord') {
-    formRef5.value.open(type, id)
-  }else if (type == 'refundOrder') {
-    formRef6.value.open(type, id)
   }
-
   
 }
 
-/** 删除按钮操作 */
-const handleDelete = async (id: number) => {
-  try {
-    // 删除的二次确认
-    await message.delConfirm()
-    // 发起删除
-    await StoreOrderApi.deleteStoreOrder(id)
-    message.success(t('common.delSuccess'))
-    // 刷新列表
-    await getList()
-  } catch {}
-}
 
 /** 确认付款按钮操作 */
 const handlePay = async (id: number) => {
@@ -374,42 +313,10 @@ const handlePay = async (id: number) => {
   } catch {}
 }
 
-/** 确认收货按钮操作 */
-const handleTake = async (id: number) => {
-  try {
-    // 删除的二次确认
-    await message.confirm('修改收货状态')
-    // 发起删除
-    await StoreOrderApi.takeStoreOrder(id)
-    message.success(t('common.updateSuccess'))
-    // 刷新列表
-    await getList()
-  } catch {}
-}
 
-/** 导出按钮操作 */
-const handleExport = async () => {
-  try {
-    // 导出的二次确认
-    await message.exportConfirm()
-    // 发起导出
-    exportLoading.value = true
-    const data = await StoreOrderApi.exportStoreOrder(queryParams)
-    download.excel(data, '订单.xls')
-  } catch {
-  } finally {
-    exportLoading.value = false
-  }
-}
-
-/** 初始化 **/
-onMounted(() => {
-  getList()
-})
 </script>
-
-<style scoped  >
- img {
+<style scoped>
+img {
         height: 36px;
         display: block;
     }
@@ -445,5 +352,4 @@ onMounted(() => {
     box-sizing: border-box;
     text-align: left;
   }
-
 </style>

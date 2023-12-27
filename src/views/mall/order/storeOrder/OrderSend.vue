@@ -10,18 +10,18 @@
       <el-form-item label="订单号" prop="orderType">
         <el-input v-model="formData.orderId" disabled class="input-width" />
       </el-form-item>
-      <el-form-item label="取餐号" prop="orderType">
+      <el-form-item label="桌号" prop="orderType" v-if="formData.orderType == 'desk'">
+        <el-input v-model="formData.deskNumber" disabled class="input-width" />
+      </el-form-item>
+      <el-form-item label="取餐号" prop="orderType" v-if="formData.orderType == 'takein'">
         <el-input v-model="formData.numberId" disabled class="input-width" />
       </el-form-item>
       <el-form-item label="地址" prop="orderType" v-if="formData.orderType == 'takeout'">
         <span>{{ formData.realName }}{{ formData.userPhone }}{{ formData.userAddress }}</span>
-      </el-form-item>
-  
-
-      
+      </el-form-item>  
     </el-form>
     <template #footer>
-      <el-button @click="submitForm" type="primary"   :disabled="formLoading">确 定</el-button>
+      <el-button @click="submitForm" type="primary"   :disabled="formLoading">打 印</el-button>
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </Dialog>
@@ -91,24 +91,18 @@ const formData = ref({
     isSystemDel: undefined
 })
 const formRules = reactive({
-  deliveryId: [{ required: true, message: '快递单号不能为空', trigger: 'blur' }]
+  //deliveryId: [{ required: true, message: '快递单号不能为空', trigger: 'blur' }]
 })
 const formRef = ref() // 表单 Ref
-
-//const express = ref([])
-//const electOrder = ref([])
-
 
 
  
 /** 打开弹窗 */
 const open = async (type: string, id?: number) => {
   dialogVisible.value = true
-  dialogTitle.value = t('action.' + type)
+  dialogTitle.value = '小票打印'
   formType.value = type
   resetForm()
-  //express.value = await ExpressApi.getExpressList()
-  //electOrder.value = await ElectronicsOrderApi.getElectronicsOrderList()
   // 修改时，设置数据
   if (id) {
     formLoading.value = true

@@ -390,7 +390,7 @@ function getMaterialPage(initPage) {
   getPage(
     Object.assign(
       {
-        pageNo: initPage.currentPage - 1,
+        pageNo: initPage.currentPage,
         pageSize: initPage.pageSize,
         descs: initPage.descs,
         ascs: initPage.ascs,

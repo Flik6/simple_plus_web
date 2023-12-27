@@ -278,6 +278,8 @@ export default {
     header: '头部'
   },
   action: {
+    order: '订单',
+    qrcode: '二维码',
     couponRecord: '优惠券领取记录',
     yue: '积分余额',
     userDetail: '用户详情',
@@ -289,6 +291,7 @@ export default {
     remark: '备注',
     sendInfo: '配送信息',
     create: '新增',
+    batchCreate: '批量新增',
     add: '新增',
     del: '删除',
     delete: '删除',

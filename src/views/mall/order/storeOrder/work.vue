@@ -1,10 +1,4 @@
 <template>
-   <ContentWrap>
-    <el-tabs v-model="activeName"  @tab-click="handleClick">
-      <el-tab-pane label="全部订单" name="first"/>
-      <!-- <el-tab-pane label="普通订单" name="second"/> -->
-    </el-tabs>
-  </ContentWrap>
   <ContentWrap>
     <!-- 搜索工作栏 -->
     <el-form
@@ -25,25 +19,7 @@
             :value="item.id"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="订单号" prop="orderId">
-        <el-input
-          v-model="queryParams.orderId"
-          placeholder="请输入订单号"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>
-      <el-form-item label="取餐号" prop="numberId">
-        <el-input
-          v-model="queryParams.numberId"
-          placeholder="请输入取餐号"
-          clearable
-          @keyup.enter="handleQuery"
-          class="!w-240px"
-        />
-      </el-form-item>   
+      </el-form-item>  
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -57,112 +33,137 @@
 
   <!-- 列表 -->
   <ContentWrap>
-     <audio id="buttonAudio"  src="/voice_new_order.mp3" v-show="false" controls></audio>
-      <el-row :gutter="24">
-        <el-col :span="6" v-for="(order,k) in list" :key="k">
-          <div >
-            <el-card class="box-card" :body-style="{ background:'#0a5ba6' }">
-              <template #header>
-                <div class="card-header" style="text-align:center">
-                  订单号:{{ order.orderId }}
-                </div>
-              </template>
-              <template #default>
-                <div style="color:#ffffff;text-align:center;">
-                  <div v-if="order.orderType == 'takeout'">
-                    <div style="font-size:20px;font-weight: bolder;">外卖</div>
-                    <div style="margin-top:5px">联系电话:{{ order.userPhone }}</div>
-                  </div>
-                  <div v-else-if="order.orderType == 'takein'">
-                    <div style="font-size:20px;font-weight: bolder;">自取</div>
-                    <div style="margin-top:5px">取餐号:{{ order.numberId }}</div>
-                  </div>
-                  <div style="font-size:20px;font-weight: bolder;">
-                    <span v-if="order.storeOrderCartInfoDOList.length > 1">
-                      多份菜品，请查看详情
-                    </span>
-                    <span v-else>{{ order.storeOrderCartInfoDOList[0].title }}×{{ order.storeOrderCartInfoDOList[0].number }}
-                      {{ order.storeOrderCartInfoDOList[0].spec }}
-                    </span>
-                  </div>
-                  
-                  <div style="margin-top:30px;">  
-                    <el-button
-                      type="primary"
-                      @click="openForm('orderDetail', order.id)"
-                      v-hasPermi="['order:store-order:update']"
-                    >详情</el-button>
-                    <el-button
-                      type="primary"
-                      @click="openForm('orderSend', order.id)"
-                      v-hasPermi="['order:store-order:update']"
-                    >出单</el-button>
-                  </div>
-                </div>
-              </template>
-              <template #footer>
-                <div style="text-align:center">下单时间:{{ formatDate(order.createTime) }}</div>
-            </template>
-            </el-card>
-         </div>
-         </el-col>
-         </el-row>
+      <audio id="buttonAudio"  src="/voice_new_order.mp3" v-show="false" controls></audio>
+      <el-tabs v-model="activeName"  @tab-click="handleClick">
+          <el-tab-pane label="最近订单" name="first">
+            <el-row :gutter="24">
+              <el-col :span="6" v-for="(order,k) in list" :key="k">
+                <div >
+                  <el-card class="box-card" :body-style="{ background:'#0a5ba6' }">
+                    <template #header>
+                      <div class="card-header" style="text-align:center">
+                        订单号:{{ order.orderId }}
+                      </div>
+                    </template>
+                    <template #default>
+                      <div style="color:#ffffff;text-align:center;">
+                        <div v-if="order.orderType == 'takeout'">
+                          <div style="font-size:20px;font-weight: bolder;">外卖</div>
+                          <div style="margin-top:5px">联系电话:{{ order.userPhone }}</div>
+                        </div>
+                        <div v-else-if="order.orderType == 'takein'">
+                          <div style="font-size:20px;font-weight: bolder;">自取</div>
+                          <div style="margin-top:5px">取餐号:{{ order.numberId }}</div>
+                        </div>
+                        <div v-else>
+                          <div style="font-size:20px;font-weight: bolder;">堂食</div>
+                          <div style="margin-top:5px">桌号:{{ order.deskNumber }},人数:{{ order.deskPeople }}</div>
+                        </div>
+                        <div style="font-size:20px;font-weight: bolder;">
+                          <span v-if="order.storeOrderCartInfoDOList.length > 1">
+                            多份菜品，请查看详情
+                          </span>
+                          <span v-else>{{ order.storeOrderCartInfoDOList[0].title }}×{{ order.storeOrderCartInfoDOList[0].number }}
+                            {{ order.storeOrderCartInfoDOList[0].spec }}
+                          </span>
+                        </div>
+                        
+                        <div style="margin-top:30px;">  
+                          <el-button
+                            type="primary"
+                            @click="openForm('orderDetail', order.id)"
+                            v-hasPermi="['order:store-order:update']"
+                          >详情</el-button>
+                          <el-button
+                            type="primary"
+                            @click="openForm('orderSend', order.id)"
+                            v-hasPermi="['order:store-order:update']"
+                          >出单</el-button>
+                        </div>
+                      </div>
+                    </template>
+                    <template #footer>
+                      <div style="text-align:center">下单时间:{{ formatDate(order.createTime) }}</div>
+                  </template>
+                  </el-card>
+              </div>
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+          <el-tab-pane label="桌台数据" name="second"> 
+            <el-form-item label="桌面状态：" >
+              <el-radio-group v-model="queryParams.deskStatus" size="large"  fill="#FF1493" @change="queryStatus">
+                <el-radio-button label="empty">空闲中</el-radio-button>
+                <el-radio-button label="ing">就餐中</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <el-row :gutter="24">
+              <el-col :span="4" v-for="(desk,k) in deskList" :key="k">
+                <div >
+                  <el-card class="box-card" :body-style="queryParams.deskStatus == 'empty' ? {background:'#8D9095'} : {background:'#F56C6C'}">
+                    <template #header>
+                      <div class="card-header" style="text-align:center;display:flex;justify-content:space-between;">
+                        <span style="font-size:14px">{{ desk.shopName}}</span>
+                        <span style="cursor:pointer;"> <Icon icon="ep:calendar" :size="20" @click="openForm('order', desk.id)" /></span>
+                      </div>
+                    </template>
+                    <template #default>
+                      <div style="color:#ffffff;text-align:center;">
+                        <div>
+                          <div style="font-size:36px;font-weight: bolder;">{{ desk.number }}</div>
+                          <div style="font-size:20px;font-weight: bolder;" v-if="queryParams.deskStatus == 'empty'">空闲中</div>
+                          <div style="font-size:20px;font-weight: bolder;" v-else>就餐中</div>
+                        </div>
+                      </div>
+                    </template>
+                    <template #footer>
+                      <div style="text-align:center">{{ desk.lastOrderTime ? formatPast(desk.lastOrderTime) + '下单' : '从未下单' }}</div>
+                  </template>
+                  </el-card>
+              </div>
+              </el-col>
+            </el-row>
+          </el-tab-pane>
+      </el-tabs> 
   </ContentWrap>
 
-  <!-- 表单弹窗：添加/修改 -->
-  <StoreOrderForm ref="formRef" @success="getList" />
   <OrderSend ref="formRef1" @success="getList" />
-  <OrderSendInfo ref="formRef2" @success="getList" />
-  <StoreOrderRemark ref="formRef3" @success="getList" />
   <OrderDetail ref="formRef4" />
-  <OrderRecord ref="formRef5" />
+  <Order ref="order"  />
 </template>
 
 <script setup lang="ts" name="StoreOrder">
-// import { dateFormatter } from '@/utils/formatTime'
-// import download from '@/utils/download'
 import * as StoreOrderApi from '@/api/mall/order/storeOrder'
 import * as ShopApi from '@/api/mall/store/shop'
-import StoreOrderForm from './StoreOrderForm.vue'
+import * as ShopDeskApi from '@/api/mall/desk/shopDesk'
 import OrderSend from './OrderSend.vue'
-import OrderSendInfo from './OrderSendInfo.vue'
-import StoreOrderRemark from './StoreOrderRemark.vue'
 import OrderDetail from './OrderDetail.vue'
-import OrderRecord from './OrderRecord.vue'
+import Order from '@/views/mall/desk/shopDesk/Order.vue'
 import type { TabsPaneContext } from 'element-plus'
-import { formatDate } from '@/utils/formatTime'
-//const message = useMessage() // 消息弹窗
-//const { t } = useI18n() // 国际化
-// import Speech from 'speak-tts';
+import { formatPast,formatDate } from '@/utils/formatTime'
 
 const loading = ref(true) // 列表的加载中
 const total = ref(0) // 列表的总页数
 const list = ref([]) // 列表的数据
 const queryParams = reactive({
   pageNo: 1,
-  pageSize: 10,
-  orderId: "",
-  realName: "",
-  userPhone: "",
-  createTime: [],
+  pageSize: 50,
   orderStatus: 1,
-  payStatus: "",
-  numberId: undefined,
+  deskStatus: "empty",
   type: 'work',
   shopId: undefined
-
 })
 const queryFormRef = ref() // 搜索的表单
-// const exportLoading = ref(false) // 导出的加载中
 
 const activeName = ref('first')
 const isNotice = ref(true)
 const shopList = ref([])
+const deskList = ref([])
 
 
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
-  console.log(tab, event)
+  console.log(tab.paneName, event)
 }
 
 const getShopList = async () => {
@@ -188,12 +189,24 @@ const getList = async () => {
   }
 }
 
+/** 查询列表 */
+const getDeskList = async () => {
+  loading.value = true
+  try {
+    const data = await ShopDeskApi.getShopDeskPage(queryParams)
+    deskList.value = data.list
+  } finally {
+    loading.value = false
+  }
+}
+
 setInterval(function() {
   orderNotice()
 },4000);
 
 setInterval(function() {
   getList()
+  getDeskList()
 },5000);
 
 
@@ -220,6 +233,8 @@ const orderNotice = async() => {
   }
 }
 
+//orderNotice()
+
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.pageNo = 1
@@ -232,37 +247,33 @@ const resetQuery = () => {
   handleQuery()
 }
 
-/** 添加/修改操作 */
-const formRef = ref()
 const formRef1 = ref()
-const formRef2 = ref()
-const formRef3 = ref()
 const formRef4 = ref()
-const formRef5 = ref()
+const order = ref()
 const openForm = (type: string, id?: number) => {
-  if (type == 'updateOrder') {
-    formRef.value.open(type, id)
-  } else if (type == 'orderSend') {
+  if (type == 'orderSend') {
     formRef1.value.open(type, id)
-  }else if (type == 'sendInfo') {
-    formRef2.value.open(type, id)
-  }else if (type == 'remark') {
-    formRef3.value.open(type, id)
   }else if (type == 'orderDetail') {
     formRef4.value.open(type, id)
-  }else if (type == 'orderRecord') {
-    formRef5.value.open(type, id)
+  }else if(type == 'order'){
+    order.value.open(type, id)
   }
 
   
 }
 
-
+const queryStatus = (value) => {
+  queryParams.deskStatus = value
+   //queryParams.deskStatus = tab.paneName
+  getDeskList()
+ 
+}
 
 /** 初始化 **/
 onMounted(() => {
   getList()
   getShopList()
+  getDeskList()
 
 })
 </script>
