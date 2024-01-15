@@ -20,7 +20,10 @@ export interface VO {
   image: string
   limit: number
 }
-
+// 查询优惠券列表
+export const getCouponList = async () => {
+  return await request.get({ url: `/coupon/list` })
+}
 // 查询优惠券列表
 export const getCouponPage = async (params: PageReqVO) => {
   return await request.get({ url: `/coupon/page`, params })

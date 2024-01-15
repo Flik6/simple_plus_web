@@ -278,6 +278,7 @@ export default {
     header: '头部'
   },
   action: {
+    buyDetail: '购买记录',
     order: '订单',
     qrcode: '二维码',
     couponRecord: '优惠券领取记录',
