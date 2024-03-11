@@ -40,3 +40,13 @@ export const deleteWebPrint = async (id: number) => {
 export const exportWebPrint = async (params) => {
   return await request.download({ url: `/store/web-print/export-excel`, params })
 }
+
+// 查询redis配置
+export const getRedisSet = async () => {
+  return await request.get({ url: `/store/web-print/getRedisSet`})
+}
+
+// 新增易联云打印机
+export const saveRedisSet = async (data) => {
+  return await request.post({ url: `/store/web-print/saveRedisSet`, data })
+}

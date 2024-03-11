@@ -14,8 +14,16 @@
         </el-select>
       </el-form-item>
       <el-form-item label="支付id" prop="detailsId">
-        <el-input v-model="formData.detailsId" placeholder="请输入支付id" />
+        <el-select v-model="formData.detailsId">
+          <el-option label="微信支付小程序" value="wx_miniapp" />
+          <el-option label="微信支付公众号" value="wx_wechat" />
+          <el-option label="微信支付H5" value="wx_h5" />
+          <el-option label="支付宝H5" value="ali_h5" />
+        </el-select>
       </el-form-item>
+      <!-- <el-form-item label="支付id" prop="detailsId">
+        <el-input v-model="formData.detailsId" placeholder="请输入支付id" />
+      </el-form-item> -->
       <el-form-item label="应用id" prop="appid">
         <el-input v-model="formData.appid" placeholder="请输入应用id" />
       </el-form-item>

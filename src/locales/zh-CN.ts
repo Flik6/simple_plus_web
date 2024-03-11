@@ -278,6 +278,7 @@ export default {
     header: '头部'
   },
   action: {
+    setPrint: '配置打印机',
     check: '审核',
     buyDetail: '购买记录',
     order: '订单',

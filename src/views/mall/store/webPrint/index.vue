@@ -31,11 +31,10 @@
         <el-button
           type="success"
           plain
-          @click="handleExport"
-          :loading="exportLoading"
-          v-hasPermi="['store:web-print:export']"
+          @click="openForm('setPrint')"
+          v-hasPermi="['store:web-print:create']"
         >
-          <Icon icon="ep:download" class="mr-5px" /> 导出
+          <Icon icon="ep:setting" class="mr-5px" /> 配置打印机
         </el-button>
       </el-form-item>
     </el-form>
@@ -86,13 +85,15 @@
 
   <!-- 表单弹窗：添加/修改 -->
   <WebPrintForm ref="formRef" @success="getList" />
+  <setForm ref="formRef2"  />
+  
 </template>
 
 <script setup lang="ts" name="WebPrint">
 import { dateFormatter } from '@/utils/formatTime'
-import download from '@/utils/download'
 import * as WebPrintApi from '@/api/mall/store/webPrint'
 import WebPrintForm from './WebPrintForm.vue'
+import setForm from './set.vue'
 const message = useMessage() // 消息弹窗
 const { t } = useI18n() // 国际化
 
@@ -108,7 +109,6 @@ const queryParams = reactive({
   createTime: []
 })
 const queryFormRef = ref() // 搜索的表单
-const exportLoading = ref(false) // 导出的加载中
 
 /** 查询列表 */
 const getList = async () => {
@@ -136,8 +136,13 @@ const resetQuery = () => {
 
 /** 添加/修改操作 */
 const formRef = ref()
+const formRef2 = ref()
 const openForm = (type: string, id?: number) => {
-  formRef.value.open(type, id)
+  if(type == 'setPrint') {
+    formRef2.value.open(type, 0)
+  }else{
+    formRef.value.open(type, id)
+  }
 }
 
 /** 删除按钮操作 */
@@ -153,20 +158,7 @@ const handleDelete = async (id: number) => {
   } catch {}
 }
 
-/** 导出按钮操作 */
-const handleExport = async () => {
-  try {
-    // 导出的二次确认
-    await message.exportConfirm()
-    // 发起导出
-    exportLoading.value = true
-    const data = await WebPrintApi.exportWebPrint(queryParams)
-    download.excel(data, '易联云打印机.xls')
-  } catch {
-  } finally {
-    exportLoading.value = false
-  }
-}
+
 
 /** 初始化 **/
 onMounted(() => {
