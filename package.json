@@ -1,6 +1,6 @@
 {
   "name": "yshop-pro-vue3",
-  "version": "1.0.0",
+  "version": "1.2.5",
   "description": "基于vue3、vite4、element-plus、typesScript",
   "author": "yshop",
   "private": false,

@@ -32,7 +32,7 @@
           type="success"
           plain
           @click="openForm('setPrint')"
-          v-hasPermi="['store:web-print:create']"
+          v-hasPermi="['store:web-print:set']"
         >
           <Icon icon="ep:setting" class="mr-5px" /> 配置打印机
         </el-button>

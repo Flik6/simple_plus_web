@@ -59,6 +59,7 @@ const formData = ref({
   refuse: undefined,
   month: undefined,
   residueAmount: undefined,
+  isCheck: true
 })
 const formRules = reactive({
   // shopId: [{ required: true, message: '门店不能为空', trigger: 'blur' }],
@@ -101,14 +102,10 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as WithdrawalApi.WithdrawalVO
-    if (formType.value === 'create') {
-      await WithdrawalApi.createWithdrawal(data)
-      message.success(t('common.createSuccess'))
-    } else {
-      await WithdrawalApi.updateWithdrawal(data)
-      message.success(t('common.updateSuccess'))
-    }
+    const data = formData.value as unknown
+    data.isCheck = true
+    await WithdrawalApi.updateWithdrawal(data)
+    message.success(t('common.updateSuccess'))
     dialogVisible.value = false
     // 发送操作成功的事件
     emit('success')
@@ -144,7 +141,8 @@ const resetForm = () => {
     status: undefined,
     refuse: undefined,
     month: undefined,
-    residueAmount: undefined
+    residueAmount: undefined,
+    isCheck: true
   }
   formRef.value?.resetFields()
 }
