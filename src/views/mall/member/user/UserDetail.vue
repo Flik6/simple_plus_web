@@ -12,6 +12,7 @@
             <el-descriptions-item label="身份证号码">{{ DetailData.cardId }}</el-descriptions-item>
           </el-descriptions>
           <el-descriptions title="用户概况" :column="2">
+            <el-descriptions-item label="绑定的会员卡">{{ DetailData.cardName ? DetailData.cardName : '无' }}</el-descriptions-item>
             <el-descriptions-item label="积分">{{ DetailData.integral }}</el-descriptions-item>
             <el-descriptions-item label="佣金金额">{{ DetailData.brokeragePrice }}</el-descriptions-item>
             <el-descriptions-item label="连续签到天数">{{ DetailData.signNum }}</el-descriptions-item>

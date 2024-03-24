@@ -22,9 +22,6 @@
       <el-form-item label="生日" prop="birthday">
         <el-input v-model="formData.birthday" placeholder="请输入生日" />
       </el-form-item>
-      <el-form-item label="身份证号码" prop="cardId">
-        <el-input v-model="formData.cardId" placeholder="请输入身份证号码" />
-      </el-form-item>
       <el-form-item label="用户备注" prop="mark">
         <el-input v-model="formData.mark" placeholder="请输入用户备注" />
       </el-form-item>
