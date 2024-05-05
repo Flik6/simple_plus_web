@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: '18'
           # 使用 pnpm
-          registry-url: 'https://registry.npm.taobao.org'
+
           # 安装 pnpm
       - name: Install dependencies
         run: npm install -g pnpm
