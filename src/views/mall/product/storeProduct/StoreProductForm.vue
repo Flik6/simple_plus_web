@@ -7,38 +7,37 @@
       label-width="100px"
       v-loading="formLoading"
     >
-    <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
-      <el-tab-pane label="基本信息" name="one">
-        <el-form-item label="展示店铺" prop="shopId">
-          <el-select
-            v-model="formValidate.shopId"
-            placeholder="选择店铺"
-            @change="selectShop"
-          >
-            <el-option
-              v-for="item in shopList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="商品名称" prop="store_name">
-          <el-input v-model="formValidate.store_name" class="input-width" placeholder="请输入商品名称" />
-        </el-form-item>
-         <el-form-item label="商品分类" prop="cate_id">
-          <el-select
-            v-model="formValidate.cate_id"
-            placeholder="选择店铺"
-            @change="selectShop"
-          >
-            <el-option
-              v-for="item in categoryTree"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+      <el-tabs v-model="activeName" type="border-card" @tab-click="handleClick">
+        <el-tab-pane label="基本信息" name="one">
+          <el-form-item label="展示店铺" prop="shopId">
+            <el-select
+              v-model="formValidate.shopId"
+              placeholder="选择店铺"
+              @change="selectShop"
+            >
+              <el-option
+                v-for="item in shopList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="商品名称" prop="store_name">
+            <el-input v-model="formValidate.store_name" class="input-width" placeholder="请输入商品名称" />
+          </el-form-item>
+          <el-form-item label="商品分类" prop="cate_id" v-if="formValidate.shopId">
+            <el-select
+              v-model="formValidate.cate_id"
+              placeholder="选择店铺"
+            >
+              <el-option
+                v-for="item in categoryTree"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
             <!-- <el-tree-select
               v-model="formValidate.cate_id"
               :data="categoryTree"
@@ -48,46 +47,46 @@
               check-strictly
               default-expand-all
             /> -->
-        </el-form-item>
-         <el-form-item label="关键字" prop="keyword">
-          <el-input v-model="formValidate.keyword" class="input-width" placeholder="请输入关键字" />
-        </el-form-item>
-         <el-form-item label="单位名" prop="unit_name">
-          <el-input v-model="formValidate.unit_name" class="input-width" placeholder="请输入单位名" />
-        </el-form-item>
-        <el-form-item label="商品价格" prop="price">
-          <el-input v-model="formValidate.price" class="input-width" placeholder="请输入商品价格" />
-        </el-form-item>
-        <el-form-item label="市场价" prop="otPrice">
-          <el-input v-model="formValidate.otPrice" class="input-width" placeholder="请输入市场价" />
-        </el-form-item>
-         <el-form-item label="库存" prop="stock">
-          <el-input v-model="formValidate.stock" class="input-width" placeholder="请输入库存" />
-        </el-form-item>
-        <el-form-item label="封面图" prop="image">
-          <Materials v-model="formValidate.image" num="1" type="image" />
-        </el-form-item>
-       <el-form-item label="轮播图" prop="slider_image">
-        <Materials v-model="formValidate.slider_image" num="5" type="image" />
-        </el-form-item>
-        <el-form-item label="商品状态" prop="is_show">
-          <el-radio-group v-model="formValidate.is_show">
-            <el-radio :label="1">上架</el-radio>
-            <el-radio :label="0">下架</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="商品简介" prop="store_info">
-          <el-input type="textarea" rows="5"  v-model="formValidate.store_info" placeholder="请输入商品简介" />
-        </el-form-item>
-      </el-tab-pane>
-      <el-tab-pane label="商品规格" name="two">
-        <el-form-item label="商品规格" prop="spec_type">
-          <el-radio-group v-model="formValidate.spec_type" @change="changeSpec">
-            <el-radio :label="0">单规格</el-radio>
-            <el-radio :label="1">多规格</el-radio>
-          </el-radio-group>
-        </el-form-item>
-           <!-- 多规格添加-->
+          </el-form-item>
+          <el-form-item label="关键词" prop="keyword">
+            <el-input v-model="formValidate.keyword" class="input-width" placeholder="请输入商品关键词" />
+          </el-form-item>
+          <el-form-item label="单位名" prop="unit_name">
+            <el-input v-model="formValidate.unit_name" class="input-width" placeholder="请输入单位名" />
+          </el-form-item>
+          <el-form-item label="商品价格" prop="price">
+            <el-input v-model="formValidate.price" class="input-width" placeholder="请输入商品价格" />
+          </el-form-item>
+          <el-form-item label="市场价" prop="otPrice">
+            <el-input v-model="formValidate.otPrice" class="input-width" placeholder="请输入市场价" />
+          </el-form-item>
+          <el-form-item label="库存" prop="stock">
+            <el-input v-model="formValidate.stock" class="input-width" placeholder="请输入库存" />
+          </el-form-item>
+          <el-form-item label="封面图" prop="image">
+            <Materials v-model="formValidate.image" num="1" type="image" />
+          </el-form-item>
+          <el-form-item label="轮播图" prop="slider_image">
+            <Materials v-model="formValidate.slider_image" num="5" type="image" />
+          </el-form-item>
+          <el-form-item label="商品状态" prop="is_show">
+            <el-radio-group v-model="formValidate.is_show">
+              <el-radio :label="1">上架</el-radio>
+              <el-radio :label="0">下架</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="商品简介" prop="store_info">
+            <el-input type="textarea" rows="5"  v-model="formValidate.store_info" placeholder="请输入商品简介" />
+          </el-form-item>
+        </el-tab-pane>
+        <el-tab-pane label="商品规格" name="two">
+          <el-form-item label="商品规格" prop="spec_type">
+            <el-radio-group v-model="formValidate.spec_type" @change="changeSpec">
+              <el-radio :label="0">单规格</el-radio>
+              <el-radio :label="1">多规格</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <!-- 多规格添加-->
           <el-col :span="24" v-if="formValidate.spec_type === 1" class="noForm">
             <el-col :span="24">
               <el-form-item label="选择规格：" prop="">
@@ -136,8 +135,8 @@
               </el-col>
               <el-col :xl="6" :lg="5" :md="10" :sm="24" :xs="24" >
 
-                  <el-button type="primary" @click="createAttrName">确定</el-button>
-                  <el-button type="danger" @click="offAttrName" >取消</el-button>
+                <el-button type="primary" @click="createAttrName">确定</el-button>
+                <el-button type="danger" @click="offAttrName" >取消</el-button>
 
               </el-col>
             </el-col>
@@ -150,11 +149,11 @@
                     <el-table-column type="myindex" v-for="(item,index) in formValidate.header" :key="index" :label="item.title" :property="item.slot" align="center">
                       <template #default="scope">
                         <div v-if="item.slot == 'pic'" align="center">
-                           <Materials v-model="scope.row[item.slot]" num="1" type="image" :width="60" :height="60" />
+                          <Materials v-model="scope.row[item.slot]" num="1" type="image" :width="60" :height="60" />
                           <!-- <single-pic v-model="scope.row[scope.column.property]" type="image" :num="1" :width="60" :height="60" /> -->
                         </div>
                         <div v-else-if="item.slot.indexOf('value') != -1" align="center">
-                         {{ scope.row[item.slot] }}
+                          {{ scope.row[item.slot] }}
                         </div>
                         <div v-else-if="item.slot == 'action'" align="center" >
                           <a @click="delAttrTable(scope.$index)" align="center">删除</a>
@@ -222,41 +221,41 @@
               </el-table>
             </el-form-item>
           </el-col>
-      </el-tab-pane>
-      <el-tab-pane label="商品详情" name="three"> 
-        <el-form-item label="产品描述">
-           <vue-ueditor-wrap v-model="formValidate.description" :config="myConfig" @before-init="addCustomDialog"    style="width: 90%;" />
-        </el-form-item>
-      </el-tab-pane>
-      <!-- <el-tab-pane label="物流设置" name="four">
-        <el-form-item label="运费设置">
-          <el-radio-group v-model="postageSet">
-            <el-radio :label="false">规定邮费</el-radio>
-            <el-radio :label="true">运费模板</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="邮费" prop="postage" v-show="!postageSet">
-          <el-input class="input-width" v-model="formValidate.postage" placeholder="请输入邮费" />
-        </el-form-item>
-        <el-form-item label="运费模板" prop="temp_id" v-show="postageSet">
-          <el-select v-model="formValidate.temp_id"  class="mr20">
-            <el-option :value="0" label="选择运费模板" />
-            <el-option v-for="(item,index) in templateList" :value="item.id" :key="index" :label="item.name"/>
-          </el-select>
-        </el-form-item>
-      </el-tab-pane> -->
-      <el-tab-pane label="营销设置" name="four">
-        <el-form-item label="获得积分" prop="give_integral">
-          <el-input v-model="formValidate.give_integral" class="input-width" placeholder="请输入获得积分" />
-        </el-form-item>
-        <!-- <el-form-item label="是否新品" prop="is_new">
-          <el-radio-group v-model="formValidate.is_new">
-            <el-radio :label="0">否</el-radio>
-            <el-radio :label="1">是</el-radio>
-          </el-radio-group>
-        </el-form-item> -->
-      </el-tab-pane>
-    </el-tabs>
+        </el-tab-pane>
+        <el-tab-pane label="商品详情" name="three">
+          <el-form-item label="产品描述">
+            <vue-ueditor-wrap v-model="formValidate.description" :config="myConfig" @before-init="addCustomDialog"    style="width: 90%;" />
+          </el-form-item>
+        </el-tab-pane>
+        <!-- <el-tab-pane label="物流设置" name="four">
+          <el-form-item label="运费设置">
+            <el-radio-group v-model="postageSet">
+              <el-radio :label="false">规定邮费</el-radio>
+              <el-radio :label="true">运费模板</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="邮费" prop="postage" v-show="!postageSet">
+            <el-input class="input-width" v-model="formValidate.postage" placeholder="请输入邮费" />
+          </el-form-item>
+          <el-form-item label="运费模板" prop="temp_id" v-show="postageSet">
+            <el-select v-model="formValidate.temp_id"  class="mr20">
+              <el-option :value="0" label="选择运费模板" />
+              <el-option v-for="(item,index) in templateList" :value="item.id" :key="index" :label="item.name"/>
+            </el-select>
+          </el-form-item>
+        </el-tab-pane> -->
+        <el-tab-pane label="营销设置" name="four">
+          <el-form-item label="获得积分" prop="give_integral">
+            <el-input v-model="formValidate.give_integral" class="input-width" placeholder="请输入获得积分" />
+          </el-form-item>
+          <!-- <el-form-item label="是否新品" prop="is_new">
+            <el-radio-group v-model="formValidate.is_new">
+              <el-radio :label="0">否</el-radio>
+              <el-radio :label="1">是</el-radio>
+            </el-radio-group>
+          </el-form-item> -->
+        </el-tab-pane>
+      </el-tabs>
     </el-form>
     <template #footer>
       <el-button v-if="activeName !== 'one'" @click="upTab">上一步</el-button>
@@ -321,46 +320,46 @@ const formData = ref({
   integral: undefined
 })
 const formValidate = ref({
-    shopId: null,
-    imageArr:[],
-    sliderImageArr: [],
-    store_name: '',
-    cate_id: 0,
-    keyword: '',
-    unit_name: '',
-    store_info: '',
-    image: '',
-    slider_image: [],
-    description: '',
-    ficti: 0,
-    give_integral: 0,
-    sort: 0,
-    is_show: 1,
-    price: 0,
-    otPrice: 0,
-    stock: 0,
-    is_new: 0,
-    postage: 0,
-    is_postage: 0,
-    is_sub: 0,
-    is_integral: 0,
-    id: 0,
-    spec_type: 0,
-    temp_id: '',
-    attrs: [],
-    items: [
-      {
-        pic: '',
-        price: 0,
-        cost: 0,
-        ot_price: 0,
-        stock: 0,
-        bar_code: '',
-        integral:0
-      }
-    ],
-    header: [],
-    selectRule: ''
+  shopId: null,
+  imageArr:[],
+  sliderImageArr: [],
+  store_name: '',
+  cate_id: 0,
+  keyword: '',
+  unit_name: '',
+  store_info: '',
+  image: '',
+  slider_image: [],
+  description: '',
+  ficti: 0,
+  give_integral: 0,
+  sort: 0,
+  is_show: 1,
+  price: 0,
+  otPrice: 0,
+  stock: 0,
+  is_new: 0,
+  postage: 0,
+  is_postage: 0,
+  is_sub: 0,
+  is_integral: 0,
+  id: 0,
+  spec_type: 0,
+  temp_id: '',
+  attrs: [],
+  items: [
+    {
+      pic: '',
+      price: 0,
+      cost: 0,
+      ot_price: 0,
+      stock: 0,
+      bar_code: '',
+      integral:0
+    }
+  ],
+  header: [],
+  selectRule: ''
 })
 
 const manyFormValidate = ref([])
@@ -391,7 +390,8 @@ const formRules = reactive({
   slider_image: [{ required: true, message: '轮播图不能为空', trigger: 'blur' }],
   store_name: [{ required: true, message: '商品名称不能为空', trigger: 'blur' }],
   cate_id: [{ required: true, message: '分类id不能为空', trigger: 'blur' }],
-  price: [{ required: true, message: '商品价格不能为空', trigger: 'blur' }]
+  price: [{ required: true, message: '商品价格不能为空', trigger: 'blur' }],
+  keyword:[{required: true, message: '商品关键词不能为空', trigger: 'blur' }]
 })
 const ruleList = ref([])
 const attrs = ref([])
@@ -428,64 +428,64 @@ const formRef = ref() // 表单 Ref
 const categoryTree = ref<any[]>([]) // 分类树
 
 const myConfig = reactive( {
-      autoHeightEnabled: false, // 编辑器不自动被内容撑高
-      initialFrameHeight: 500, // 初始容器高度
-      initialFrameWidth: '100%', // 初始容器宽度
-      UEDITOR_HOME_URL: '/UEditor/',
-      serverUrl: '',
-      zIndex: 9999,
-      toolbars: [
-        [
-          'undo',
-          'redo',
-          '|',
-          'bold',
-          'italic',
-          'underline',
-          'fontborder',
-          'strikethrough',
-          'superscript',
-          'subscript',
-          'removeformat',
-          'formatmatch',
-          'autotypeset',
-          'blockquote',
-          'pasteplain',
-          '|',
-          'forecolor',
-          'backcolor',
-          'insertorderedlist',
-          'insertunorderedlist',
-          'selectall',
-          'cleardoc',
-          '|',
-          'rowspacingtop',
-          'rowspacingbottom',
-          'lineheight',
-          '|',
-          'customstyle',
-          'paragraph',
-          'fontfamily',
-          'fontsize',
-          '|',
-          'directionalityltr',
-          'directionalityrtl',
-          'indent',
-          '|',
-          'justifyleft',
-          'justifycenter',
-          'justifyright',
-          'justifyjustify',
-          '|',
-          'touppercase',
-          'tolowercase',
-          '|',
-          'imagenone',
-          'imageleft',
-          'imageright',
-          'imagecenter',
-        ],
-      ],
+  autoHeightEnabled: false, // 编辑器不自动被内容撑高
+  initialFrameHeight: 500, // 初始容器高度
+  initialFrameWidth: '100%', // 初始容器宽度
+  UEDITOR_HOME_URL: '/UEditor/',
+  serverUrl: '',
+  zIndex: 9999,
+  toolbars: [
+    [
+      'undo',
+      'redo',
+      '|',
+      'bold',
+      'italic',
+      'underline',
+      'fontborder',
+      'strikethrough',
+      'superscript',
+      'subscript',
+      'removeformat',
+      'formatmatch',
+      'autotypeset',
+      'blockquote',
+      'pasteplain',
+      '|',
+      'forecolor',
+      'backcolor',
+      'insertorderedlist',
+      'insertunorderedlist',
+      'selectall',
+      'cleardoc',
+      '|',
+      'rowspacingtop',
+      'rowspacingbottom',
+      'lineheight',
+      '|',
+      'customstyle',
+      'paragraph',
+      'fontfamily',
+      'fontsize',
+      '|',
+      'directionalityltr',
+      'directionalityrtl',
+      'indent',
+      '|',
+      'justifyleft',
+      'justifycenter',
+      'justifyright',
+      'justifyjustify',
+      '|',
+      'touppercase',
+      'tolowercase',
+      '|',
+      'imagenone',
+      'imageleft',
+      'imageright',
+      'imagecenter',
+    ],
+  ],
 })
 const activeName = ref('one')
 const shopList = ref([])
@@ -496,8 +496,8 @@ const open = async (type: string, id?: number) => {
   dialogTitle.value = t('action.' + type)
   formType.value = type
   activeName.value = 'one'
-  getList()
-  
+  await getList()
+
   resetForm()
 
   // 修改时，设置数据
@@ -506,16 +506,23 @@ const open = async (type: string, id?: number) => {
   } else {
     id = 0
   }
+
   getInfo(id)
-   // 获得分类树
- // await getTree()
- 
+  // 获得分类树
+  // await getTree()
+
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
 
-const selectShop = (val) => {
-  getTree(val)
+const selectShop =async (val) => {
+  let data =  await ProductCategoryApi.getCategoryList({shopId: val})
+  categoryTree.value = data
+  if (data && data.length > 0) {
+    formValidate.value.cate_id = data[0].id
+  }else {
+    formValidate.value.cate_id = undefined
+  }
 }
 
 
@@ -525,7 +532,7 @@ const getList = async () => {
     shopList.value = data
 
   } finally {
-    
+
   }
 }
 
@@ -533,33 +540,33 @@ const getList = async () => {
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   // 校验表单
-  if (!formRef) return 
- // const valid = await formRef.value.validate()
+  if (!formRef) return
+  // const valid = await formRef.value.validate()
   formRef.value.validate((valid, fields) => {
-  if (valid) {
-    console.log(fields)
-  } else {
-    return message.warning('请添加基本信息')
-    // console.log('error submit!', fields)
-  }
+    if (valid) {
+      console.log(fields)
+    } else {
+      return message.warning('请添加基本信息')
+      // console.log('error submit!', fields)
+    }
   })
 
 
   // 提交请求
   formLoading.value = true
   try {
-     if(formValidate.value.spec_type ===0 ){
-        formValidate.value.attrs = oneFormValidate.value;
-        formValidate.value.header = [];
-        formValidate.value.items = [];
-      }else{
-        formValidate.value.items = attrs.value;
-        formValidate.value.attrs = manyFormValidate.value;
-      }
-      if(formValidate.value.spec_type === 1 && manyFormValidate.value.length===0){
-        message.warning('请点击生成规格！');
-      }
-      await StoreProductApi.createStoreProduct(formValidate.value)
+    if(formValidate.value.spec_type ===0 ){
+      formValidate.value.attrs = oneFormValidate.value;
+      formValidate.value.header = [];
+      formValidate.value.items = [];
+    }else{
+      formValidate.value.items = attrs.value;
+      formValidate.value.attrs = manyFormValidate.value;
+    }
+    if(formValidate.value.spec_type === 1 && manyFormValidate.value.length===0){
+      message.warning('请点击生成规格！');
+    }
+    await StoreProductApi.createStoreProduct(formValidate.value)
     dialogVisible.value = false
     // 发送操作成功的事件
     emit('success')
@@ -592,7 +599,7 @@ const upTab = () => {
 
 }
 const downTab = () => {
-if (activeName.value == 'one') {
+  if (activeName.value == 'one') {
     activeName.value = 'two'
     return
   }
@@ -610,7 +617,7 @@ if (activeName.value == 'one') {
   // }
 }
 
-  
+
 
 /** 重置表单 */
 const resetForm = () => {
@@ -654,69 +661,107 @@ const resetForm = () => {
     integral: undefined
   }
   formRef.value?.resetFields()
+  formValidate.value = {
+    shopId: null,
+    imageArr:[],
+    sliderImageArr: [],
+    store_name: '',
+    cate_id: 0,
+    keyword: '',
+    unit_name: '',
+    store_info: '',
+    image: '',
+    slider_image: [],
+    description: '',
+    ficti: 0,
+    give_integral: 0,
+    sort: 0,
+    is_show: 1,
+    price: 0,
+    otPrice: 0,
+    stock: 0,
+    is_new: 0,
+    postage: 0,
+    is_postage: 0,
+    is_sub: 0,
+    is_integral: 0,
+    id: 0,
+    spec_type: 0,
+    temp_id: '',
+    attrs: [],
+    items: [
+      {
+        pic: '',
+        price: 0,
+        cost: 0,
+        ot_price: 0,
+        stock: 0,
+        bar_code: '',
+        integral:0
+      }
+    ],
+    header: [],
+    selectRule: ''
+  }
 }
 
- // 详情
-const  getInfo  = (id) => {
-     // let that = this;
-      StoreProductApi.getStoreProductInfo(id).then(async res => {
-      let data = res.productInfo;
-        console.log('data:', data)
-      postageSet.value = false
-      if(data){
-       // let cate_id = parseInt(data.cate_id) || 0;
-        if(data.temp_id > 0) postageSet.value = true
-        attrs.value = data.items || [];
-        formValidate.value = data;
-        formValidate.value.cate_id = Number(data.cate_id);
-        if(formValidate.value.shopId){
-           console.log('shopId:',formValidate.value.shopId)
-            await getTree(formValidate.value.shopId)
-          }
-        oneFormValidate.value = [data.attr];
-        formValidate.value.header = [];
-        generate();
-        manyFormValidate.value = data.attrs;
-        console.log('data2:',formValidate.value.spec_type)
-        if(data.spec_type === 0){
-          manyFormValidate.value = [];
-        }else {
-          createBnt.value = true;
-          oneFormValidate.value = [
-            {
-              imageArr: [],
-              pic: '',
-              price: 0,
-              cost: 0,
-              ot_price: 0,
-              stock: 0,
-              seckill_stock: 0,
-              seckill_price: 0,
-              pink_stock: 0,
-              pink_price: 0,
-              bar_code: '',
-              weight:0,
-              volume:0,
-              brokerage:0,
-              brokerage_two:0,
-              integral:0
-            }
-          ]
-
-           console.log('spec_type2:',formValidate.value.spec_type)
+// 详情
+const  getInfo  =async (id) => {
+  // let that = this;
+  let res = await StoreProductApi.getStoreProductInfo(id)
+  let data = res.productInfo;
+  console.log('data:', data)
+  postageSet.value = false
+  if(data){
+    // let cate_id = parseInt(data.cate_id) || 0;
+    if(data.temp_id > 0) postageSet.value = true
+    attrs.value = data.items || [];
+    formValidate.value = data;
+    formValidate.value.cate_id = Number(data.cate_id);
+    if(formValidate.value.shopId){
+      console.log('shopId:',formValidate.value.shopId)
+      await getTree(formValidate.value.shopId)
+    }
+    oneFormValidate.value = [data.attr];
+    formValidate.value.header = [];
+    generate();
+    manyFormValidate.value = data.attrs;
+    console.log('data2:',formValidate.value.spec_type)
+    if(data.spec_type === 0){
+      manyFormValidate.value = [];
+    }else {
+      createBnt.value = true;
+      oneFormValidate.value = [
+        {
+          imageArr: [],
+          pic: '',
+          price: 0,
+          cost: 0,
+          ot_price: 0,
+          stock: 0,
+          seckill_stock: 0,
+          seckill_price: 0,
+          pink_stock: 0,
+          pink_price: 0,
+          bar_code: '',
+          weight:0,
+          volume:0,
+          brokerage:0,
+          brokerage_two:0,
+          integral:0
         }
-      }
+      ]
 
-      ruleList.value = res.ruleList;
-      templateList.value = res.tempList;
+      console.log('spec_type2:',formValidate.value.spec_type)
+    }
+  }
 
-    }).catch(res => {
-      console.log('err:'+res)
-    })
+  ruleList.value = res.ruleList;
+  templateList.value = res.tempList;
 }
 
 const route = useRoute()
- // 立即生成
+// 立即生成
 const generate = () => {
   StoreProductApi.isFormatAttr(formValidate.value.id, { attrs: attrs.value }).then(res => {
     manyFormValidate.value = res.value;
@@ -738,42 +783,42 @@ const generate = () => {
       oneFormBatch.value[0].pic = formValidate.value.image;
     }
   }).catch(res => {
-   console.log('err:'+res)
+    console.log('err:'+res)
   })
 }
 
 /** 获得分类树 */
 const getTree = async (val) => {
   const data =  await ProductCategoryApi.getCategoryList({shopId: val})
- // const tree = handleTree3(data, 'id', 'parentId')
- // console.log('tree:',tree)
+  // const tree = handleTree3(data, 'id', 'parentId')
+  // console.log('tree:',tree)
   //const menu = { id: 0, name: '顶级分类', children: tree }
   categoryTree.value = data
 }
 
 const addCustomDialog  = () => {
-      window.UE.registerUI('yshop', function (editor, uiName) {
-        let dialog = new window.UE.ui.Dialog({
-          iframeUrl: '/yshop/materia/index',
-          editor: editor,
-          name: uiName,
-          title: '上传图片',
-          cssRules: 'width:1200px;height:650px;padding:20px;'
-        });
-        this.dialog = dialog;
+  window.UE.registerUI('yshop', function (editor, uiName) {
+    let dialog = new window.UE.ui.Dialog({
+      iframeUrl: '/yshop/materia/index',
+      editor: editor,
+      name: uiName,
+      title: '上传图片',
+      cssRules: 'width:1200px;height:650px;padding:20px;'
+    });
+    this.dialog = dialog;
 
-        var btn = new window.UE.ui.Button({
-          name: 'dialog-button',
-          title: '上传图片',
-          cssRules: `background-image: url(../../../assets/imgs/icons.png);background-position: -726px -77px;`,
-          onclick: function () {
-            dialog.render();
-            dialog.open();
-          }
-        });
+    var btn = new window.UE.ui.Button({
+      name: 'dialog-button',
+      title: '上传图片',
+      cssRules: `background-image: url(../../../assets/imgs/icons.png);background-position: -726px -77px;`,
+      onclick: function () {
+        dialog.render();
+        dialog.open();
+      }
+    });
 
-        return btn;
-      }, 37);
+    return btn;
+  }, 37);
 }
 
 // 改变规格
@@ -786,7 +831,7 @@ const confirm = () => {
     message.error('请选择属性')
   }
   ruleList.value.forEach(function (item, index) {
-     console.log(index)
+    console.log(index)
     if (item.ruleName === formValidate.value.selectRule) {
       attrs.value = item.ruleValue;
     }
@@ -823,7 +868,7 @@ const createAttrName = () =>{
     showIput.value = false;
     createBnt.value = true;
   } else {
-     message.warning('请添加完整的规格！')
+    message.warning('请添加完整的规格！')
   }
 }
 // 添加属性
@@ -864,54 +909,54 @@ const clearAttr = () => {
 </script>
 
 <style scoped>
-  .input-width {
-    width: 40%;
-  }
+.input-width {
+  width: 40%;
+}
 
-  .mb15 {
-    margin-bottom: 15px !important;
+.mb15 {
+  margin-bottom: 15px !important;
 }
 .mb5 {
-    margin-bottom: 5px !important;
+  margin-bottom: 5px !important;
 }
 .mr20 {
-    margin-right: 20px !important;
+  margin-right: 20px !important;
 }
 
 .mr5 {
-    margin-right: 5px !important;
+  margin-right: 5px !important;
 }
 .mr15 {
-    margin-right: 15px !important;
+  margin-right: 15px !important;
 }
 .ml95 {
-    margin-left: 95px !important;
+  margin-left: 95px !important;
 }
 .mt10{
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .acea-row {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-lines: multiple;
-    -moz-box-lines: multiple;
-    -o-box-lines: multiple;
-    -webkit-flex-wrap: wrap;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    /* 辅助类 */
+  display: -webkit-box;
+  display: -moz-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-lines: multiple;
+  -moz-box-lines: multiple;
+  -o-box-lines: multiple;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  /* 辅助类 */
 }
 .acea-row.row-middle {
-    -webkit-box-align: center;
-    -moz-box-align: center;
-    -o-box-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
-    align-items: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  align-items: center;
 }
 
 </style>
