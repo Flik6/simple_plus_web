@@ -17,15 +17,21 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-
+          # 使用 pnpm
+          registry-url: 'https://registry.npm.taobao.org'
+          # 安装 pnpm
       - name: Install dependencies
-        run: npm install
+        run: npm install -g pnpm
+
+      - name: Install dependencies using pnpm
+        run: pnpm install
 
       - name: Build
-        run: npm run build:github
+        run: pnpm run build
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           deploy_key: ${{ secrets.ACCESS_TOKEN }}
           publish_dir: ./dist-pro
+
