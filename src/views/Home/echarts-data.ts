@@ -306,3 +306,36 @@ export const wordOptions = {
     }
   ]
 }
+
+export const dailySalesOption: EChartsOption = {
+  // 定义图表的标题
+  title: {
+    text: '双柱状图'
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow'
+    }
+  },
+  // 定义图例组件，表示不同系列的标记、颜色和名字
+  legend: {
+    data: ['系列1', '系列2']
+  },
+  // 定义x轴
+  xAxis: {
+    data: ["分类1", "分类2", "分类3", "分类4", "分类5", "分类6"]
+  },
+  // 定义y轴
+  yAxis: {},
+  // 设置图表的系列列表
+  series: [{
+    name: '系列1',
+    type: 'bar', // 指定图表类型为柱状图
+    data: [5, 20, 36, 10, 10, 20]
+  }, {
+    name: '系列2',
+    type: 'bar',
+    data: [15, 25, 16, 35, 10, 20]
+  }]
+};

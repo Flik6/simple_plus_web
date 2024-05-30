@@ -1,5 +1,6 @@
 <template>
-  <Dialog :title="dialogTitle" append-to-body="true" v-model="dialogVisible" width="70%">
+  <SelectStoreProduct ref="selectProductRef" @selected="handleSelected"/>
+  <Dialog :title="dialogTitle" :append-to-body="true" v-model="dialogVisible" width="70%">
     <el-form
       ref="formRef"
       :model="formValidate"
@@ -158,6 +159,19 @@
                         <div v-else-if="item.slot == 'action'" align="center" >
                           <a @click="delAttrTable(scope.$index)" align="center">删除</a>
                         </div>
+                        <div v-else-if="item.slot == 'intro'" align="center">
+                          <el-popover :width="300" placement="right" trigger="hover">
+                            <template #reference>
+                              <el-button size="small" @click="handleSelectProduct(scope.row)">设置描述</el-button>
+                            </template>
+                            <el-table :height="400" :data="scope.row[item.slot]">
+<!--                              <el-table-column width="150" property="id" label="商品id" />-->
+                              <el-table-column width="200" property="storeName" label="商品" />
+                              <el-table-column width="100" property="price" label="价格" />
+                            </el-table>
+                          </el-popover>
+
+                        </div>
                         <div v-else align="center">
                           <el-input  v-model="scope.row[item.slot]" align="center" />
                         </div>
@@ -271,6 +285,7 @@ import * as ProductCategoryApi from '@/api/mall/product/category'
 // import { handleTree3 } from '@/utils/tree'
 import type { TabsPaneContext } from 'element-plus'
 import * as ShopApi from '@/api/mall/store/shop'
+import SelectStoreProduct from "@/views/mall/product/storeProduct/SelectStoreProduct.vue";
 
 
 const { t } = useI18n() // 国际化
@@ -514,6 +529,17 @@ const open = async (type: string, id?: number) => {
 }
 defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 
+const selectProductRef = ref()
+const selectProductAttr = ref<object>({})
+const handleSelectProduct = (row) => {
+  selectProductAttr.value = row
+  selectProductRef.value.openDialog("选择商品")
+}
+const handleSelected = (selectList)=>{
+  selectProductAttr.value.intro = selectList
+  console.log(selectProductAttr.value)
+  console.log(manyFormValidate.value)
+}
 
 const selectShop =async (val) => {
   let data =  await ProductCategoryApi.getCategoryList({shopId: val})
@@ -560,6 +586,9 @@ const submitForm = async () => {
       formValidate.value.header = [];
       formValidate.value.items = [];
     }else{
+      manyFormValidate.value.map((item)=>{
+        item.intro = JSON.stringify(item.intro)
+      })
       formValidate.value.items = attrs.value;
       formValidate.value.attrs = manyFormValidate.value;
     }

@@ -30,6 +30,10 @@ const deptName = ref('')
 const deptList = ref<Tree[]>([]) // 树形结构
 const treeRef = ref<InstanceType<typeof ElTree>>()
 
+watch(deptName, (val) => {
+  treeRef.value!.filter(val)
+})
+
 /** 获得分类树 */
 const getTree = async () => {
   const res = await ProductCategoryApi.getCategoryList('')

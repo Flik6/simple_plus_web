@@ -52,6 +52,11 @@
         </template>
       </el-table-column>
       <el-table-column label="权重" align="center" prop="weigh" />
+      <el-table-column label="图类型" align="center" prop="type" >
+        <template #default="scope">
+          {{ formatType(scope.row.type) }}
+        </template>
+      </el-table-column>
       <el-table-column label="展示店铺" align="center" prop="shopName" />
       <el-table-column
         label="添加时间"
@@ -123,7 +128,14 @@ const getList = async () => {
     loading.value = false
   }
 }
-
+let typeList = [
+  {label: "轮播图", value: 0},
+  {label: "首屏图", value: 1},
+  {label: "幕帘图", value: 2},
+]
+const formatType = (type) => {
+  return typeList.find(item => item.value == type)?.label
+}
 /** 搜索按钮操作 */
 const handleQuery = () => {
   queryParams.pageNo = 1

@@ -37,7 +37,7 @@ import App from './App.vue'
 
 import './permission'
 
-import '@/plugins/tongji' // 百度统计
+// import '@/plugins/tongji' // 百度统计
 
 import Logger from '@/utils/Logger'
 import VueUeditorWrap from 'vue-ueditor-wrap'

@@ -27,7 +27,21 @@
         </el-select>
       </el-form-item>
       <el-form-item label="图片" prop="image">
-          <Materials v-model="formData.image" num="1" type="image" />
+          <Materials v-model="formData.image" :num="1" type="image" />
+      </el-form-item>
+      <el-form-item label="图类型" prop="type">
+        <el-select
+          v-model="formData.type"
+          placeholder="选择广告图类型"
+        >
+
+          <el-option
+            v-for="(item,index) in typeList"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="权重" prop="weigh">
         <el-input v-model="formData.weigh" placeholder="请输入权重" />
@@ -51,7 +65,11 @@ import * as ShopApi from '@/api/mall/store/shop'
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
-
+let typeList = [
+  {label: "轮播图", value: 0},
+  {label: "首屏图", value: 1},
+  {label: "幕帘图", value: 2},
+]
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
 const formLoading = ref(false) // 表单的加载中：1）修改时的数据加载；2）提交的按钮禁用
@@ -61,12 +79,14 @@ const formData = ref({
   image: undefined,
   isSwitch: undefined,
   weigh: undefined,
+  type:undefined,
   shopId: 0
 })
 const formRules = reactive({
   image: [{ required: true, message: '图片不能为空', trigger: 'blur' }],
   weigh: [{ required: true, message: '权重不能为空', trigger: 'blur' }],
-  shopId: [{ required: true, message: '请选择店铺', trigger: 'blur' }]
+  shopId: [{ required: true, message: '请选择店铺', trigger: 'blur' }],
+  type: [{ required: true, message: '请选择广告图类型', trigger: 'blur' }],
 })
 const formRef = ref() // 表单 Ref
 const shopList = ref([])

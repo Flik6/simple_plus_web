@@ -103,8 +103,8 @@ export default {
     small: '小'
   },
   login: {
-    welcome: '欢迎使用yshop点餐系统',
-    message: '开箱即用的商城管理后台意象点餐管理系统',
+    welcome: '欢迎使用点餐系统',
+    message: '开箱即用的商城管理后台点餐管理系统',
     tenantname: '租户名称',
     username: '用户名',
     password: '密码',
