@@ -13,6 +13,9 @@
       <el-form-item label="订单总价" prop="totalPrice">
         <el-input disabled v-model="formData.totalPrice" placeholder="请输入订单总价" />
       </el-form-item>
+      <el-form-item label="支付金额" prop="totalPrice">
+        <el-input disabled v-model="formData.payPrice" placeholder="请输入支付金额" />
+      </el-form-item>
       <el-form-item label="退款金额" prop="payPrice">
         <el-input v-model="formData.payPrice" placeholder="退款金额" />
       </el-form-item>

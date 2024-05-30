@@ -26,7 +26,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     // 服务端渲染
     server: {
       // 是否开启 https
-      https: false,
+      // https: false,
       // 端口号
       port: env.VITE_PORT,
       host: "0.0.0.0",

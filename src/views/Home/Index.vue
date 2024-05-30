@@ -75,6 +75,138 @@
           </el-card>
         </el-col>
       </el-row>
+
+      <el-row :class="prefixCls" :gutter="20" justify="space-between">
+        <el-col :lg="6" :md="12" :sm="12" :xl="6" :xs="24">
+          <el-card class="mb-20px" shadow="hover">
+            <el-skeleton :loading="loading" :rows="2" animated>
+              <template #default>
+                <div :class="`${prefixCls}__item flex justify-between`">
+                  <div>
+                    <div
+                      :class="`${prefixCls}__item--icon ${prefixCls}__item--peoples p-16px inline-block rounded-6px`"
+                    >
+                      <Icon :size="40" icon="svg-icon:money" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col justify-between">
+                    <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`"
+                    >店铺今日销售额
+                    </div>
+                    <CountTo
+                      :duration="2600"
+                      :decimals="2"
+                      :end-val="count.todayPrice"
+                      :start-val="0"
+                      class="text-20px font-700 text-right"
+                    />
+                  </div>
+                </div>
+              </template>
+            </el-skeleton>
+          </el-card>
+        </el-col>
+
+        <el-col :lg="6" :md="12" :sm="12" :xl="6" :xs="24">
+          <el-card class="mb-20px" shadow="hover">
+            <el-skeleton :loading="loading" :rows="2" animated>
+              <template #default>
+                <div :class="`${prefixCls}__item flex justify-between`">
+                  <div>
+                    <div
+                      :class="`${prefixCls}__item--icon ${prefixCls}__item--message p-16px inline-block rounded-6px`"
+                    >
+                      <Icon :size="40" icon="svg-icon:money" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col justify-between">
+                    <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`"
+                    >昨日销售额
+                    </div>
+                    <CountTo
+                      :duration="2600"
+                      :decimals="2"
+                      :end-val="count.proPrice"
+                      :start-val="0"
+                      class="text-20px font-700 text-right"
+                    />
+                  </div>
+                </div>
+              </template>
+            </el-skeleton>
+          </el-card>
+        </el-col>
+
+        <el-col :lg="6" :md="12" :sm="12" :xl="6" :xs="24">
+          <el-card class="mb-20px" shadow="hover">
+            <el-skeleton :loading="loading" :rows="2" animated>
+              <template #default>
+                <div :class="`${prefixCls}__item flex justify-between`">
+                  <div>
+                    <div
+                      :class="`${prefixCls}__item--icon ${prefixCls}__item--money p-16px inline-block rounded-6px`"
+                    >
+                      <Icon :size="40" icon="svg-icon:money" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col justify-between">
+                    <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`"
+                    >周销售额
+                    </div>
+                    <CountTo
+                      :duration="2600"
+                      :decimals="2"
+                      :end-val="count.lastWeekPrice"
+                      :start-val="0"
+                      class="text-20px font-700 text-right"
+                    />
+                  </div>
+                </div>
+              </template>
+            </el-skeleton>
+          </el-card>
+        </el-col>
+
+        <el-col :lg="6" :md="12" :sm="12" :xl="6" :xs="24">
+          <el-card class="mb-20px" shadow="hover">
+            <el-skeleton :loading="loading" :rows="2" animated>
+              <template #default>
+                <div :class="`${prefixCls}__item flex justify-between`">
+                  <div>
+                    <div
+                      :class="`${prefixCls}__item--icon ${prefixCls}__item--shopping p-16px inline-block rounded-6px`"
+                    >
+                      <Icon :size="40" icon="svg-icon:money" />
+                    </div>
+                  </div>
+                  <div class="flex flex-col justify-between">
+                    <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`"
+                    >月度销售额
+                    </div>
+                    <CountTo
+                      :duration="2600"
+                      :decimals="2"
+                      :end-val="count.monthPrice"
+                      :start-val="0"
+                      class="text-20px font-700 text-right"
+                    />
+                  </div>
+                </div>
+              </template>
+            </el-skeleton>
+          </el-card>
+        </el-col>
+      </el-row>
+
+      <el-row :gutter="20" justify="space-between">
+        <el-col xs="24" :sm="24" :md="24" :lg="24"  :xl="24" >
+          <el-card class="mb-20px" shadow="hover">
+            <el-skeleton :loading="loading" animated>
+              <Echart :height="300" :options="dailySalesData" />
+            </el-skeleton>
+          </el-card>
+        </el-col>
+      </el-row>
     </div>
     <PanelGroupT />
     <div class="divBox">
@@ -112,6 +244,10 @@ import PanelGroupT from './PanelGroupT.vue'
 import { formatTime } from '@/utils'
 import { useUserStore } from '@/store/modules/user'
 import avatarImg from '@/assets/imgs/avatar.gif'
+import {useDesign} from "@/hooks/web/useDesign";
+
+import { dailySalesOption} from "@/views/Home/echarts-data";
+import {cloneDeep, set} from "lodash-es";
 const userStore = useUserStore()
 const avatar = userStore.getUser.avatar ? userStore.getUser.avatar : avatarImg
 const { t } = useI18n()
@@ -131,18 +267,80 @@ const count = ref({
 })
 const loading = ref(true)
 const notice = ref([])
+const { getPrefixCls } = useDesign()
+const prefixCls = getPrefixCls('panel')
 
-
+let dailySalesData = ref({})
 /** 查询列表 */
 const getData = async () => {
   try {
     const data = await StoreOrderApi.getShopCount()
 
     count.value = data
+
+    dailySalesData.value = getDailySalesPriceBarChartData(data.dailySales)
+
+    // 周销售额统计
+    // set(
+    //   dailySalesPriceBarChartData,
+    //   'title.text',
+    //   '周销售额统计'
+    // )
+    // set(
+    //   dailySalesPriceBarChartData,
+    //   'xAxis.data',
+    //   chartOption.map(item=>item.pay_time)
+    // )
+    // set(dailySalesPriceBarChartData, 'series', [
+    //   {
+    //     name: '当日收入',
+    //     data: chartOption.map(item=>item.dailySalesPrice),
+    //     type: 'bar'
+    //   }
+    // ])
+    //
+    // // 周订单数统计
+    // set(
+    //   dailySalesCountBarChartData,
+    //   'title.text',
+    //   '周订单数统计'
+    // )
+    // set(
+    //   dailySalesCountBarChartData,
+    //   'xAxis.data',
+    //   chartOption.map(item=>item.pay_time)
+    // )
+    // set(dailySalesCountBarChartData, 'series', [
+    //   {
+    //     name: '当日订单',
+    //     data: chartOption.map(item=>item.dailyOrderCount),
+    //     type: 'bar'
+    //   }
+    // ])
   } finally {
   }
 }
 
+const getDailySalesPriceBarChartData= (data)=>{
+  let series = [
+    {
+      type: 'bar',
+      name: "日销售金额",
+      data: data.map(item=>item.dailySalesPrice)
+    },
+    {
+      type: 'bar',
+      name: "日订单数",
+      data: data.map(item=>item.dailyOrderCount)
+    }
+  ]
+  let result = cloneDeep(dailySalesOption)
+  set(result,'title.text','店铺周销售')
+  set(result,'xAxis.data',data.map(item=>item.pay_time))
+  set(result,'legend.data',series.map(item=>item.name))
+  set(result,'series',series)
+  return result
+}
 /** 查询公告列表 */
 const getList = async () => {
   loading.value = true
@@ -165,6 +363,53 @@ onMounted(() => {
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
+$prefix-cls: #{$namespace}-panel;
+
+.#{$prefix-cls} {
+  &__item {
+    &--peoples {
+      color: #40c9c6;
+    }
+
+    &--message {
+      color: #36a3f7;
+    }
+
+    &--money {
+      color: #f4516c;
+    }
+
+    &--shopping {
+      color: #34bfa3;
+    }
+
+    &:hover {
+      :deep(.#{$namespace}-icon) {
+        color: #fff !important;
+      }
+
+      .#{$prefix-cls}__item--icon {
+        transition: all 0.38s ease-out;
+      }
+
+      .#{$prefix-cls}__item--peoples {
+        background: #40c9c6;
+      }
+
+      .#{$prefix-cls}__item--message {
+        background: #36a3f7;
+      }
+
+      .#{$prefix-cls}__item--money {
+        background: #f4516c;
+      }
+
+      .#{$prefix-cls}__item--shopping {
+        background: #34bfa3;
+      }
+    }
+  }
+}
 .acea-row {
     display: -webkit-box;
     display: -moz-box;

@@ -23,33 +23,90 @@
               <Icon icon="ep:circle-close" @click="handleRemove(index)" />
             </div>
             <div>
-              <el-tag class="mb5" style="margin: 2px 4px 2px 0;" closable v-for="(j,indexn) in item.detail" :name="j"
-               :key="indexn" @close="handleRemove2(item.detail,indexn)">
-                {{ j }}
-              </el-tag>
-               <el-input placeholder="请输入属性名称" v-model="item.detail.attrsVal"
-                        style="width: 170px">
+              <span v-for="(j,indexn) in item.detail" :key="indexn">
+                <el-popover placement="right" :width="300" trigger="click">
+                  <template #reference>
+                    <el-tag
+                      class="mb5"
+                      style="margin: 2px 4px 2px 0;"
+                      closable
+                      :name="j"
+                      @close="handleRemove2(item.detail,indexn)">
+                      {{ j }}
+                    </el-tag>
+                  </template>
+                   <p>可选数</p>
+                  <el-select
+                    v-model="item.info[j].num"
+                    placeholder="Select"
+                    size="large"
+                    style="width: 240px"
+                    @change="((val)=>{changeNumEvent(val,item.info,j)})"
+                  >
+                    <el-option
+                      v-for="val in 3"
+                      :key="val"
+                      :label="val"
+                      :value="val"
+                    />
+                  </el-select>
+                </el-popover>
+              </span>
+<!--              <el-tag class="mb5" style="margin: 2px 4px 2px 0;" closable v-for="(j,indexn) in item.detail" :name="j"-->
+<!--               :key="indexn" @close="handleRemove2(item.detail,indexn)">-->
+<!--                {{ j }}-->
+<!--              </el-tag>-->
+               <el-input
+                 placeholder="请输入属性名称"
+                 v-model="item.detail.attrsVal"
+                 style="width: 170px"
+               >
                 <template #append><el-button type="primary" @click="createAttr(item.detail.attrsVal,index)">添加</el-button></template>
               </el-input>
+
             </div>
           </el-form-item>
         </el-row>
-        <el-row :gutter="20" v-if="isBtn" >
+        <el-row :gutter="20" v-if="isBtn" style="align-items: center;">
         <!-- <el-col :span="24" v-if="isBtn" style="background-color: gray;"> -->
-           <el-col :span="9" class="mr15">
-            <el-form-item label="规格：">
+           <el-col :span="6" >
+            <el-form-item class="full-container" label="规格：">
               <el-input placeholder="请输入规格" v-model="attrsName"/>
             </el-form-item>
           </el-col>
-          <el-col :span="9" class="mr20">
-            <el-form-item label="规格值：">
+          <el-col :span="6">
+            <el-form-item  class="full-container"  label="规格值：">
               <el-input v-model="attrsVal" placeholder="请输入规格值"/>
             </el-form-item>
           </el-col>
-          <el-col :span="2">
-            <el-button type="primary" @click="createAttrName">确定</el-button>
+          <el-col :span="6" >
+            <el-form-item  class="full-container" label="绑定规格：">
+              <el-select
+                v-model="bindType"
+                :disabled="!formData.ruleValue || formData.ruleValue.length==0"
+                multiple
+                collapse-tags
+                collapse-tags-tooltip
+                placeholder="请输入规格值"
+                style="width: 240px"
+              >
+                <el-option
+                  v-for="item in 6"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
           </el-col>
-          <el-col :span="2">
+          <el-col :span="6" >
+            <el-form-item  class="full-container" label="可选数">
+              <el-input :disabled="!formData.ruleValue || formData.ruleValue.length==0" v-model="chooseNum" placeholder="可选数"/>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-button type="primary" @click="createAttrName">确定</el-button>
             <el-button @click="offAttrName">取消</el-button>
           </el-col>
         <!-- </el-col> -->
@@ -65,6 +122,7 @@
 </template>
 <script setup lang="ts">
 import * as StoreProductRuleApi from '@/api/mall/shop/storeProductRule'
+import {ref} from "vue";
 
 const { t } = useI18n() // 国际化
 const message = useMessage() // 消息弹窗
@@ -72,6 +130,8 @@ const message = useMessage() // 消息弹窗
 const isBtn = ref(false)
 const attrsName = ref('')
 const attrsVal = ref('')
+const chooseNum = ref(1)
+const bindType = ref([])
 
 const dialogVisible = ref(false) // 弹窗的是否展示
 const dialogTitle = ref('') // 弹窗的标题
@@ -80,7 +140,8 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: 0,
   ruleName: '',
-  ruleValue: []
+  ruleValue: [],
+  info:{}
 })
 const formRules = reactive({
   ruleName: [{ required: true, message: '规格名称不能为空', trigger: 'blur' }],
@@ -99,6 +160,21 @@ const open = async (type: string, id?: number) => {
     formLoading.value = true
     try {
       formData.value = await StoreProductRuleApi.getStoreProductRule(id)
+      formData.value.ruleValue.map(item => {
+          item.detail.forEach((value) => {
+            if (!item.info) item.info = {}
+            if (!item.info[value])item.info[value] = {
+                num: 1,
+                bindType: [],
+            };
+          });
+        })
+      // formData.value.info = formData.value.info ? formData.value.ruleValue.map(item => {
+      //   item.detail.forEach((value) => {
+      //     item.info[value] = "";
+      //   });
+      // }) :{}
+      console.log(formData.value)
     } finally {
       formLoading.value = false
     }
@@ -110,7 +186,7 @@ defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 const emit = defineEmits(['success']) // 定义 success 事件，用于操作成功后的回调
 const submitForm = async () => {
   // 校验表单
-  if (!formRef) return
+  if (!formRef.value) return
   const valid = await formRef.value.validate()
   if (!valid) return
   // 提交请求
@@ -152,6 +228,10 @@ const handleRemove2 = (item, index) => {
 const createAttr = (num, idx) => {
     if (num) {
         formData.value.ruleValue[idx].detail.push(num);
+        formData.value.ruleValue[idx].info[num]={
+          num: 1,
+          bindType:[]
+        }
         var hash = {};
         formData.value.ruleValue[idx].detail = formData.value.ruleValue[idx].detail.reduce(function (item, next) {
           hash[next] ? '' : hash[next] = true && item.push(next);
@@ -166,14 +246,31 @@ const addBtn = () => {
 }
 
 const createAttrName = () => {
+  console.log(1111)
   if (attrsName.value && attrsVal.value) {
+    let temp_key = attrsVal.value
     let data = {
       value: attrsName.value,
-      detail: [attrsVal.value]
+      detail: [attrsVal.value],
+      info:{
+        [temp_key]:{
+            num:1,
+            bindType:[]
+        }
+      }
     }
+
+    if (!formData.value.ruleValue) formData.value.ruleValue = []
+    formData.value.ruleValue.push(data)
+
+    formData.value.ruleValue.info[attrsVal.value] = {
+      num: chooseNum.value,
+      bindType: bindType.value
+    }
+    console.log(formData.value)
     
     //arr.push(data)
-    formData.value.ruleValue.push(data)
+
     var hash = {}
     formData.value.ruleValue = formData.value.ruleValue.reduce(function (item, next) {
             /* eslint-disable */
@@ -193,10 +290,19 @@ const createAttrName = () => {
 const offAttrName = () => {
   isBtn.value = false
 }
+const changeNumEvent = (val,info, key: any) => {
+  if(!info[key]) info[key] ={}
+  info[key].num = val
+
+}
 
 </script>
 
 <style scoped>
+.full-container{
+  width: 100%;
+  height: 100%;
+}
 .mb15 {
     margin-bottom: 15px !important;
 }
