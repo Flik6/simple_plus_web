@@ -1,0 +1,1 @@
+import{aQ as e,__tla as r}from"./index-IVPz-ih6.js";let a,l=Promise.all([(()=>{try{return r}catch{}})()]).then(async()=>{a=async t=>await e.get({url:"/member/user-bill/page",params:t})});export{l as __tla,a as g};
