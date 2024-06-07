@@ -1,1 +1,0 @@
-import{k as s,ao as c,ap as l,__tla as i}from"./index-IVPz-ih6.js";let e,_=Promise.all([(()=>{try{return i}catch{}})()]).then(async()=>{const{t:m}=s();e=function(t){if(t&&t instanceof Array&&t.length>0){const{wsCache:n}=c(),r=t,o="*:*:*";return!!n.get(l.USER).permissions.some(a=>o===a||r.includes(a))}return!1}});export{_ as __tla,e as c};
