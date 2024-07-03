@@ -27,7 +27,7 @@
           <el-form-item label="商品名称" prop="store_name">
             <el-input v-model="formValidate.store_name" class="input-width" placeholder="请输入商品名称" />
           </el-form-item>
-          <el-form-item label="商品分类" prop="cate_id" v-if="formValidate.shopId">
+          <el-form-item label="商品分类" prop="cate_id">
             <el-select
               v-model="formValidate.cate_id"
               placeholder="选择店铺"
@@ -335,11 +335,11 @@ const formData = ref({
   integral: undefined
 })
 const formValidate = ref({
-  shopId: null,
+  shopId: 0,
   imageArr:[],
   sliderImageArr: [],
   store_name: '',
-  cate_id: 0,
+  cate_id: undefined,
   keyword: '',
   unit_name: '',
   store_info: '',
@@ -523,6 +523,7 @@ const open = async (type: string, id?: number) => {
   }
 
   getInfo(id)
+  await selectShop(0)
   // 获得分类树
   // await getTree()
 
@@ -555,8 +556,9 @@ const selectShop =async (val) => {
 const getList = async () => {
   try {
     const data = await ShopApi.getShopList()
-    shopList.value = data
-
+    let temp = [{id: 0, name: '全部'}]
+    shopList.value = [...temp, ...data]
+    console.log(shopList)
   } finally {
 
   }
@@ -691,11 +693,11 @@ const resetForm = () => {
   }
   formRef.value?.resetFields()
   formValidate.value = {
-    shopId: null,
+    shopId: 0,
     imageArr:[],
     sliderImageArr: [],
     store_name: '',
-    cate_id: 0,
+    cate_id: undefined,
     keyword: '',
     unit_name: '',
     store_info: '',

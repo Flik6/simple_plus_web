@@ -6,8 +6,8 @@
              label-width="68px">
       <el-form-item label="店铺id" prop="shopId">
         <el-select v-model="queryParams.shopId" placeholder="请选择店铺id" clearable size="small">
-          <el-option v-for="dict in getDictOptions(DICT_TYPE.STORE_SHOP_NAMES)"
-                     :key="dict.value" :label="dict.label" :value="dict.value"/>
+          <el-option v-for="shop in shopList"
+                     :key="shop.id" :label="shop.name" :value="shop.id"/>
         </el-select>
       </el-form-item>
       <el-form-item label="店铺名称" prop="shopName">
@@ -76,14 +76,14 @@
     <!-- 操作工具栏 -->
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                   v-hasPermi="['shop:store-combo:create']">新增
+        <el-button type="primary" plain size="mini" @click="handleAdd"
+                   v-hasPermi="['shop:store-combo:create']"><Icon icon="ep:plus" />新增
         </el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+        <el-button type="warning" plain  size="mini" @click="handleExport"
                    :loading="exportLoading"
-                   v-hasPermi="['shop:store-combo:export']">导出
+                   v-hasPermi="['shop:store-combo:export']"><Icon icon="ep:download" class="mr-5px" /> 导出
         </el-button>
       </el-col>
       <!--      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
@@ -94,14 +94,16 @@
       <el-table-column label="套餐id" align="center" prop="id"/>
       <el-table-column label="店铺" align="center" prop="shopId">
         <template v-slot="scope">
-          <dict-tag :type="DICT_TYPE.STORE_SHOP_NAMES" :value="scope.row.shopId"/>
+          <div>
+            {{ findNameById(scope.row.shopId) }}
+          </div>
         </template>
       </el-table-column>
-<!--      <el-table-column label="店铺名称" align="center" prop="shopName"/>-->
+      <!--      <el-table-column label="店铺名称" align="center" prop="shopName"/>-->
       <el-table-column label="套餐名称" align="center" prop="name"/>
       <el-table-column label="套餐简介" align="center" prop="intro"/>
       <el-table-column label="关键词" align="center" prop="keyword"/>
-<!--      <el-table-column label="套餐图片" align="center" prop="image"/>-->
+      <!--      <el-table-column label="套餐图片" align="center" prop="image"/>-->
       <el-table-column label="价格" align="center" prop="price"/>
       <el-table-column label="排序" align="center" prop="sort"/>
       <el-table-column label="销量" align="center" prop="sales"/>
@@ -118,7 +120,7 @@
       <el-table-column label="添加时间" align="center" prop="createTime" width="180">
         <template v-slot="scope">
           <span>{{ scope.row.createTime }}</span>
-<!--          <span>{{ parseTime(scope.row.createTime) }}</span>-->
+          <!--          <span>{{ parseTime(scope.row.createTime) }}</span>-->
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -142,8 +144,8 @@
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="店铺" prop="shopId">
           <el-select v-model="form.shopId" placeholder="请选择店铺">
-            <el-option v-for="dict in getDictOptions(DICT_TYPE.STORE_SHOP_NAMES)"
-                       :key="dict.value" :label="dict.label" :value="parseInt(dict.value)"/>
+            <el-option v-for="shop in shopList"
+                       :key="shop.id" :label="shop.name" :value="shop.id"/>
           </el-select>
         </el-form-item>
         <el-form-item label="套餐名称" prop="name">
@@ -156,7 +158,7 @@
           <el-input v-model="form.keyword" placeholder="请输入关键词"/>
         </el-form-item>
         <el-form-item label="套餐图" prop="image">
-          <Materials v-model="form.image" :num="1" type="image" />
+          <Materials v-model="form.image" :num="1" type="image"/>
         </el-form-item>
         <el-form-item label="价格" prop="price">
           <el-input v-model="form.price" placeholder="请输入价格"/>
@@ -176,7 +178,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="套餐内容" prop="combos">
-          <ComboInfo @update-combos="updateCombos"/>
+          <ComboInfo ref="comboInfoRef" @update-combos="updateCombos"/>
 
         </el-form-item>
         <!--        <el-form-item label="是否热卖" prop="isHot">-->
@@ -230,7 +232,9 @@ const message = useMessage() // 消息弹窗
 
 import {ref, reactive} from 'vue';
 import ComboInfo from "@/views/mall/storeCombo/ComboInfo.vue";
-
+import * as ShopApi from "@/api/mall/store/shop";
+// 套餐详情ref
+const comboInfoRef = ref(null);
 // 遮罩层
 const loading = ref(true);
 // 导出遮罩层
@@ -269,7 +273,7 @@ const queryParams = reactive({
 // 表单参数
 const form = ref({
   id: undefined,
-  shopId: -1,
+  shopId: 0,
   shopName: "",
   name: "",
   intro: "",
@@ -286,11 +290,12 @@ const form = ref({
   isNew: false,
   combos: [],
 });
-
+//商店列表
+const shopList = ref([])
 const reset = () => {
   form.value = {
     id: undefined,
-    shopId: "",
+    shopId: 0,
     shopName: "",
     name: "",
     intro: "",
@@ -307,7 +312,8 @@ const reset = () => {
     isNew: false,
     combos: [],
   }
-  formRef.value?.resetFields()
+  formRef.value?.resetFields();
+  comboInfoRef.value?.resetComboList();
 };
 const formRef = ref()
 
@@ -333,7 +339,9 @@ const rules = reactive({
 });
 
 onMounted(() => {
+  getShopList();
   getList();
+
 });
 
 const updateCombos = (combos) => {
@@ -354,8 +362,8 @@ const getList = async () => {
 };
 
 const cancel = () => {
-  open.value = false;
   reset();
+  open.value = false;
 };
 
 const handleQuery = () => {
@@ -403,9 +411,10 @@ const submitForm = async () => {
   } else {
     createStoreCombo(form.value).then(() => {
       message.success("新增成功");
-      open.value = false;
+      cancel()
       getList();
     });
+
   }
 };
 
@@ -435,4 +444,24 @@ const handleExport = async () => {
     console.error('Error exporting combo:', error);
   }
 };
+
+const getShopList = async () => {
+
+  try {
+    const data = await ShopApi.getShopList()
+    let temp = [{id: 0, name: '全部'}]
+    shopList.value = [...temp, ...data]
+
+  } finally {
+
+  }
+}
+function findNameById(id) {
+  const foundItem = shopList.value.find(item => item.id === id);
+  return foundItem? foundItem.name : '未找到';
+}
 </script>
+
+<style scoped lang="scss">
+
+</style>

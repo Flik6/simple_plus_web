@@ -11,8 +11,13 @@
 
       <div class="card-container">
         <el-card v-for="(product, i) in item.products" :key="i" class="card-item">
-          <div>{{ product.id }}</div>
+          <div>{{ product.storeName }}</div>
           <el-image :src="product.image" class="card-image" fit="cover"/>
+          <el-form-item label="商品份数" >
+            <el-select placeholder="请输入商品份数" v-model="product.productNum">
+              <el-option v-for="(num,index) in 10" :key="index" :value="num">{{ num }}</el-option>
+            </el-select>
+          </el-form-item>
         </el-card>
       </div>
     </el-card>
@@ -74,6 +79,11 @@ const handleSelectProduct = () => {
   selectProductRef.value.openDialog("选择商品", {specType: 0})
 }
 const handleSelected = (selectList) => {
+  selectList.forEach(item => {
+    if (!item.hasOwnProperty("productNum")){
+      item.productNum = 1
+    }
+  })
   form.value.products = selectList
   console.log(selectList)
   // selectProductAttr.value.intro = selectList
@@ -88,6 +98,12 @@ const removeCombo = (index) => {
   emits("update-combos", comboList.value)
 
 }
+
+const resetComboList = () => {
+  comboList.value = []
+}
+
+defineExpose({ resetComboList });
 
 const submitForm = async () => {
   // 校验表单
@@ -130,6 +146,8 @@ const submitForm = async () => {
 }
 
 .card-image {
+  height: 100px;
+  width: 100%;
   flex: 1; /* 图片撑满 */
   object-fit: cover; /* 自适应宽高比，填充整个卡片 */
   border-radius: 4px;
