@@ -125,7 +125,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template v-slot="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+          <el-button v-if="false" size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                      v-hasPermi="['shop:store-combo:update']">修改
           </el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
@@ -140,7 +140,7 @@
                 @pagination="getList"/>
 
 
-    <el-dialog v-model="open" :title="title" width="70%" v-dialogDrag append-to-body>
+    <el-dialog v-model="open" :title="title" width="70%" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="店铺" prop="shopId">
           <el-select v-model="form.shopId" placeholder="请选择店铺">
@@ -387,7 +387,8 @@ const handleUpdate = async (row) => {
   const id = row.id;
   try {
     const response = await getStoreCombo(id);
-    form.value = response.data
+    console.log(response)
+    form.value = response
     // Object.assign(form, response.data);
     open.value = true;
     title.value = "修改套餐";
