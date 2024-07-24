@@ -70,6 +70,7 @@
       <el-form-item label="绑定打印机" prop="uniprintId">
         <el-select
           v-model="formData.uniprintId"
+          multiple
           placeholder="选择打印机"
         >
           <el-option
@@ -88,7 +89,7 @@
         </el-radio-group>
       </el-form-item>
 
-     
+
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>
@@ -178,7 +179,7 @@ const open = async (type: string, id?: number) => {
     try {
       formData.value = await ShopApi.getShop(id)
       formData.value.adminId = formData.value.adminId.map(Number)
-      formData.value.uniprintId = parseInt(formData.value.uniprintId)
+      formData.value.uniprintId = formData.value.uniprintId.split(",").map(Number)
     } finally {
       formLoading.value = false
     }
@@ -196,7 +197,8 @@ const submitForm = async () => {
   // 提交请求
   formLoading.value = true
   try {
-    const data = formData.value as unknown as ShopApi.ShopVO
+    let data = formData.value as unknown as ShopApi.ShopVO
+    data.uniprintId = data.uniprintId.join(",")
     if (formType.value === 'create') {
       await ShopApi.createShop(data)
       message.success(t('common.createSuccess'))
@@ -230,7 +232,7 @@ const getList = async () => {
     adminUsers.value = data
 
   } finally {
-    
+
   }
 }
 
@@ -240,7 +242,7 @@ const getPrintList = async () => {
     webPrints.value = data
 
   } finally {
-    
+
   }
 }
 

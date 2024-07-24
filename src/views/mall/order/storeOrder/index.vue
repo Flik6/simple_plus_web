@@ -75,7 +75,7 @@
           class="!w-240px"
         />
       </el-form-item>
-     
+
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
@@ -90,7 +90,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    
+
   </ContentWrap>
 
   <!-- 列表 -->
@@ -213,6 +213,7 @@
                 <el-dropdown-item @click="openForm('orderDetail', scope.row.id)">订单详情</el-dropdown-item>
                 <el-dropdown-item @click="openForm('orderRecord', scope.row.id)">订单记录</el-dropdown-item>
                 <el-dropdown-item @click="handleDelete(scope.row.id)">删除订单</el-dropdown-item>
+                <el-dropdown-item @click="handlePrint(scope.row.orderId)">打印订单</el-dropdown-item>
                 <el-dropdown-item v-if = "scope.row.statusStr != '未支付'" @click="openForm('remark', scope.row.id)">订单备注</el-dropdown-item>
                 <el-dropdown-item v-if = "scope.row.statusStr == '待收货'" @click="handleTake(scope.row.id)">后台收货</el-dropdown-item>
               </el-dropdown-menu>
@@ -280,7 +281,7 @@ const payStatus = ref('')
 
 const handleClick = (tab: TabsPaneContext, event: Event) => {
   console.log(tab.paneName, event)
-  queryParams.orderType = tab.paneName 
+  queryParams.orderType = tab.paneName
   getList()
 }
 
@@ -345,7 +346,22 @@ const openForm = (type: string, id?: number) => {
     formRef6.value.open(type, id)
   }
 
-  
+
+}
+/**
+ * 打印按钮操作
+ */
+const handlePrint = async (orderId: number) => {
+  console.log(orderId)
+  // 打印的二次确认
+  try {
+    await message.confirm('确定打印订单吗？')
+    await StoreOrderApi.printStoreOrder(orderId)
+    message.success("打印成功")
+  } catch {
+
+  }
+
 }
 
 /** 删除按钮操作 */

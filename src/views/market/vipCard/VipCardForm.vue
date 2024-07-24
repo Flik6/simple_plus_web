@@ -14,11 +14,11 @@
           </el-form-item>
           <el-form-item label="会员卡样式" prop="styleImg">
             <el-image v-for="(item,key) in cardbg"
-             :key="key" 
-             style="width: 100px; height: 60px;margin-right:10px;" 
+             :key="key"
+             style="width: 100px; height: 60px;margin-right:10px;"
              :src="item.img"
              @click="selectImg(item)"
-             :class="{'checked':item.id == checkedid}" 
+             :class="{'checked':item.id == checkedid}"
               />
           </el-form-item>
           <el-form-item label="排序" prop="sort">
@@ -47,7 +47,7 @@
         <el-tab-pane label="领取配置" name="second">
           <el-form-item label="有效期" prop="period">
             <el-input v-model="formData.period" placeholder="请输入有效期" />
-            <el-text class="mx-1" type="warning">有效期单位月，0-表示永久</el-text>
+            <el-text class="mx-1" type="warning">有效期单位天，0-表示永久</el-text>
           </el-form-item>
           <el-form-item label="购买的价格" prop="price">
             <el-input v-model="formData.price" placeholder="请输入购买的价格" />
@@ -62,7 +62,7 @@
             <Editor v-model="formData.rule" height="150px" />
           </el-form-item>
         </el-tab-pane>
-      </el-tabs>  
+      </el-tabs>
     </el-form>
     <template #footer>
       <el-button @click="submitForm" type="primary" :disabled="formLoading">确 定</el-button>

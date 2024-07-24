@@ -54,7 +54,7 @@
       <el-table-column label="有效期" align="center" prop="period">
         <template #default="scope">
           <span v-if="scope.row.period == 0">永久</span>
-          <span v-else>{{ scope.row.period }}月</span>
+          <span v-else>{{ scope.row.period }}天</span>
          </template>
       </el-table-column>
       <el-table-column label="购买的价格" align="center" prop="price" />
@@ -109,7 +109,7 @@
   <!-- 表单弹窗：添加/修改 -->
   <VipCardForm ref="formRef" @success="getList" />
   <buyDetail ref="formRef1" />
-  
+
 </template>
 
 <script setup lang="ts" name="VipCard">
@@ -177,7 +177,7 @@ const openForm = (type: string, id?: number) => {
     formRef.value.open(type, id)
   }else if (type == 'buyDetail') {
     formRef1.value.open(type, id)
-  } 
+  }
 }
 
 /** 删除按钮操作 */

@@ -90,6 +90,9 @@ export const rufundStoreOrder = async (data) => {
   return await request.post({ url: `/order/store-order/refund`,data })
 }
 
+export const printStoreOrder = async (orderId: number) => {
+  return await request.get({ url: `/order/store-order/print?orderId=` + orderId })
+}
 
 export const getStoreOrderRecordList = async (id: number) => {
   return await request.get({ url: `/order/store-order/record-list?id=` + id })
