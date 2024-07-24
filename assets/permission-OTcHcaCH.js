@@ -1,1 +1,0 @@
-import{k as c,ap as o,aq as l,__tla as i}from"./index-BGiPFk3o.js";let e,_=Promise.all([(()=>{try{return i}catch{}})()]).then(async()=>{const{t:m}=c();e=function(t){if(t&&t instanceof Array&&t.length>0){const{wsCache:r}=o(),n=t,s="*:*:*";return!!r.get(l.USER).permissions.some(a=>s===a||n.includes(a))}return!1}});export{_ as __tla,e as c};
