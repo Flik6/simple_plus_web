@@ -1,1 +1,0 @@
-import{_ as t,__tla as a}from"./main.vue_vue_type_script_setup_true_name_WxVideoPlayer_lang-DcBtaqev.js";import{__tla as _}from"./index-DkWBYEPi.js";let r=Promise.all([(()=>{try{return a}catch{}})(),(()=>{try{return _}catch{}})()]).then(async()=>{});export{r as __tla,t as default};

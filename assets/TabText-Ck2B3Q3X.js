@@ -1,0 +1,1 @@
+import{_ as t,__tla as a}from"./TabText.vue_vue_type_script_setup_true_lang-C7f6nAlU.js";import{__tla as _}from"./index-06lJR0i3.js";let r=Promise.all([(()=>{try{return a}catch{}})(),(()=>{try{return _}catch{}})()]).then(async()=>{});export{r as __tla,t as default};
