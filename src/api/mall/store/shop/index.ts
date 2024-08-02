@@ -22,7 +22,9 @@ export interface ShopVO {
 }
 
 export const getShopList = async () => {
-  return await request.get({ url: `/store/shop/list` })
+  const data = await request.get({ url: `/store/shop/list` })
+  const temp = [{id: 0, name: '全部'}]
+  return [...temp, ...data]
 }
 
 // 查询门店管理列表

@@ -31,7 +31,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="折扣比例" prop="discount" v-show="formData.isDiscount == 1">
-            <el-input v-model="formData.discount" placeholder="请输入折扣比例" />
+            <el-input v-model="formData.discount" placeholder="请输入折扣比例（例如：85折 填入85）" />
           </el-form-item>
           <el-form-item label="开卡赠送" prop="giveMethod">
               <el-checkbox label="赠送积分" v-model="integral" />

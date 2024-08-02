@@ -73,10 +73,9 @@ onMounted(() => {
 });
 
 const getShopList = async () => {
-  let temp = [{id: 0, name: '全部'}]
   try {
     const data = await ShopApi.getShopList()
-    shopList.value = [...temp, ...data]
+    shopList.value = data
 
   } finally {
 

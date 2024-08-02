@@ -556,8 +556,7 @@ const selectShop =async (val) => {
 const getList = async () => {
   try {
     const data = await ShopApi.getShopList()
-    let temp = [{id: 0, name: '全部'}]
-    shopList.value = [...temp, ...data]
+    shopList.value = data
     console.log(shopList)
   } finally {
 
